@@ -25,17 +25,56 @@ EventMind tackles that end to end:
 
 ## Architecture
 
-```
-REST ──► Command (Axon) ──► Events ──► Axon Server ──► Query side (read models)
-                 │
-                 ▼
-          Observability (ApplicationLog)
-                 │   POST /logs (ingestion)
-                 ▼
-          AI log store (AI_APPLICATION_LOG, AI-owned)
-                 │
-                 ▼
-          RAG retrieval ──► LLM analysis ──► Recommendation ──► Approve/Execute
+### Component Flow
+
+```mermaid
+flowchart LR
+    subgraph CO["eventmind-command :8081"]
+        REST["POST /symptoms"]
+        CMD["CreateSymptomCommand"]
+        AGG["SymptomAggregate"]
+    end
+
+    AX["Axon Server :8024/8124"]
+
+    subgraph QU["eventmind-query :8082"]
+        QH["SymptomEventsHandler"]
+        QM[("Read model")]
+        QGET["GET /symptoms"]
+    end
+
+    subgraph OB["eventmind-observability :8083"]
+        OH["SymptomEventLogHandler"]
+        ALOG[("APPLICATION_LOG")]
+        JFR["RecordingStream / JfrAnalyzer"]
+        JGET["GET /jfr/report"]
+    end
+
+    subgraph AI["eventmind-ai :8080"]
+        ING["LogIngestionClient → POST /logs"]
+        ILOG[("AI_APPLICATION_LOG")]
+        VS[("Vector store (RAG)")]
+        LLM["LLM (Ollama)"]
+        REC["HealingRecommendation"]
+        APPR["Approve / Execute"]
+    end
+
+    REST --> CMD
+    CMD --> AGG
+    AGG -- "SymptomCreatedEvent" --> AX
+    AX --> QH
+    AX --> OH
+    QH --> QM
+    QM --> QGET
+    OH --> ALOG
+    JFR --> JGET
+    ALOG --> ING
+    ING --> ILOG
+    ILOG --> VS
+    JGET -- "JfrReportClient auto-fetch" --> LLM
+    VS -- "RAG retrieval" --> LLM
+    LLM --> REC
+    REC --> APPR
 ```
 
 The pipeline is fully wired across modules:
@@ -57,6 +96,44 @@ The pipeline is fully wired across modules:
   structured healing recommendation.
 - **Recommendation execution**: recommendations require human approval and are executed
   through a pluggable `HealingExecutor`.
+
+### End-to-End Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Client
+    participant CMD as command-8081
+    participant AX as Axon-Server
+    participant QRY as query-8082
+    participant OBS as observability-8083
+    participant AI as ai-8080
+    participant LLM as Ollama
+
+    Client->>CMD: POST /symptoms
+    CMD->>AX: CreateSymptomCommand
+    AX-->>CMD: accepted
+    CMD-->>Client: Created Symptom with Id : ...
+    AX-->>QRY: SymptomCreatedEvent
+    AX-->>OBS: SymptomCreatedEvent
+    OBS->>AI: POST /logs (async, best-effort)
+
+    Client->>QRY: GET /symptoms
+    QRY-->>Client: read model
+    Client->>OBS: GET /jfr/report
+    OBS-->>Client: JFR text report
+
+    Client->>AI: POST /healing/analyze
+    AI->>OBS: GET /jfr/report (auto-fetch)
+    OBS-->>AI: JFR report
+    AI->>LLM: prompt (symptom + logs + JFR)
+    LLM-->>AI: HealingRecommendation
+    AI-->>Client: PENDING_APPROVAL
+
+    Client->>AI: POST /healing/approve
+    AI->>AI: transition + execute
+    AI-->>Client: ApprovalResult
+```
 
 ## Design Decisions
 
@@ -172,11 +249,11 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 
   ```properties
   DB_URL=jdbc:postgresql://localhost:5432/eventmind
-  DB_USERNAME=postgres
-  DB_PASSWORD=postgres
-  COMMAND_DB_PASSWORD=password
-  QUERY_DB_PASSWORD=password
-  OBSERVABILITY_DB_PASSWORD=password
+  DB_USERNAME=
+  DB_PASSWORD=
+  COMMAND_DB_PASSWORD=
+  QUERY_DB_PASSWORD=
+  OBSERVABILITY_DB_PASSWORD=
   ```
 
   Each module loads it automatically via
