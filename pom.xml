@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<!-- Spring Boot manages all dependency versions -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.4</version>
+		<relativePath/>
+	</parent>
+
+
+	<groupId>com.ravi</groupId>
+	<artifactId>eventmind</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<packaging>pom</packaging>
+
+
+	<name>eventmind</name>
+
+
+	<modules>
+		<module>eventmind-shared</module>
+		<module>eventmind-command</module>
+		<module>eventmind-query</module>
+		<module>eventmind-ai</module>
+		<module>eventmind-observability</module>
+	</modules>
+
+
+	<!-- Some locally cached artifacts were originally fetched under the repository id
+	     "maven-central" (older Maven/IDE naming). Declaring that id here lets Maven trust
+	     the cached copies during offline builds instead of re-verifying against the network. -->
+	<repositories>
+		<repository>
+			<id>maven-central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
+
+
+	<properties>
+		<java.version>21</java.version>
+		<spring-ai.version>1.0.0</spring-ai.version>
+		<axon.version>4.11.1</axon.version>
+		<guava.version>33.4.8-jre</guava.version>
+	</properties>
+
+
+	<dependencyManagement>
+		<dependencies>
+
+
+			<!-- Spring AI versions -->
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-bom</artifactId>
+				<version>${spring-ai.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+
+			<!-- Axon Framework (single source of truth for all modules) -->
+			<dependency>
+				<groupId>org.axonframework</groupId>
+				<artifactId>axon-spring-boot-starter</artifactId>
+				<version>${axon.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.axonframework</groupId>
+				<artifactId>axon-server-connector</artifactId>
+				<version>${axon.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.axonframework</groupId>
+				<artifactId>axon-messaging</artifactId>
+				<version>${axon.version}</version>
+			</dependency>
+
+			<!-- Guava (transitive via Axon; pinned once for all modules) -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+
+
+			<!-- Internal modules -->
+			<dependency>
+				<groupId>com.ravi</groupId>
+				<artifactId>eventmind-shared</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+
+	<build>
+		<plugins>
+			<!-- Dependency hygiene gate: fail the build on drift
+			     (unused declared dependencies / used undeclared dependencies). -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.8.1</version>
+				<executions>
+					<execution>
+						<id>dependency-analyze</id>
+						<phase>test</phase>
+						<goals>
+							<goal>analyze</goal>
+						</goals>
+						<configuration>
+							<failOnWarning>true</failOnWarning>
+							<ignoreNonCompile>true</ignoreNonCompile>
+							<ignoreAllNonTestScoped>true</ignoreAllNonTestScoped>
+							<ignoredUsedUndeclaredDependencies>
+								<!-- Framework/test-infrastructure groups may be pulled in transitively;
+								     non-framework direct dependencies must be declared explicitly. -->
+								<artifact>org.springframework*</artifact>
+								<artifact>org.axonframework*</artifact>
+								<artifact>org.mockito*</artifact>
+								<artifact>org.junit.*</artifact>
+								<artifact>org.junit.jupiter*</artifact>
+								<artifact>org.junit.platform*</artifact>
+								<artifact>org.opentest4j*</artifact>
+								<artifact>org.apiguardian*</artifact>
+								<artifact>org.apache.tomcat.embed*</artifact>
+								<artifact>org.aspectj*</artifact>
+								<artifact>com.fasterxml.jackson*</artifact>
+								<artifact>org.hibernate*</artifact>
+								<artifact>jakarta.*</artifact>
+								<artifact>org.slf4j*</artifact>
+								<artifact>ch.qos.logback*</artifact>
+								<artifact>org.apache.logging.log4j*</artifact>
+								<artifact>org.yaml*</artifact>
+								<artifact>io.micrometer*</artifact>
+								<artifact>com.zaxxer*</artifact>
+								<artifact>net.bytebuddy*</artifact>
+								<artifact>org.objenesis*</artifact>
+							</ignoredUsedUndeclaredDependencies>
+							<ignoredUnusedDeclaredDependencies>
+								<!-- Starters aggregate transitive deps; their own classes
+								     are never referenced directly in application code. -->
+								<artifact>org.springframework.boot:spring-boot-starter-web</artifact>
+								<artifact>org.springframework.boot:spring-boot-starter-log4j2</artifact>
+								<artifact>org.springframework.boot:spring-boot-starter-data-jpa</artifact>
+								<artifact>org.springframework.boot:spring-boot-starter-test</artifact>
+								<artifact>org.springframework.boot:spring-boot-starter-aop</artifact>
+								<!-- Referenced only via the AOP pointcut string in AuditAspect. -->
+								<artifact>com.ravi:eventmind-shared</artifact>
+								<artifact>org.axonframework:axon-spring-boot-starter</artifact>
+								<artifact>org.springframework.ai:spring-ai-starter-model-ollama</artifact>
+								<artifact>org.springframework.ai:spring-ai-starter-vector-store-pgvector</artifact>
+								<!-- Runtime/provided plumbing wired by Spring Boot auto-configuration. -->
+								<artifact>com.h2database:h2</artifact>
+								<artifact>org.flywaydb:flyway-core</artifact>
+								<artifact>org.projectlombok:lombok</artifact>
+							</ignoredUnusedDeclaredDependencies>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

@@ -1,0 +1,20 @@
+services:
+  axonserver:
+    image: axoniq/axonserver:2024.2.2
+    container_name: eventmind-axonserver
+    hostname: axonserver
+    restart: unless-stopped
+    environment:
+      - axoniq_axonserver_hostname=localhost
+      - axoniq_axonserver_internal_hostname=axonserver
+    ports:
+      - "8024:8024"
+      - "8124:8124"
+      - "8224:8224"
+    volumes:
+      - axonserver-data:/axonserver/data
+      - axonserver-events:/axonserver/events
+
+volumes:
+  axonserver-data:
+  axonserver-events:

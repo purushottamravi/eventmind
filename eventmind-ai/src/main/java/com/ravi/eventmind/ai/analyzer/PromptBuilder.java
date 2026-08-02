@@ -1,0 +1,107 @@
+package com.ravi.eventmind.ai.analyzer;
+
+
+import com.ravi.eventmind.ai.model.DiagnosticContext;
+import org.springframework.stereotype.Component;
+
+@Component
+public class PromptBuilder {
+    public String build(DiagnosticContext context) {
+        return build(context, "");
+    }
+
+    public String build(DiagnosticContext context, String knowledgeContext) {
+
+        return """
+        ROLE:
+        You are an expert Java Site Reliability Engineer (SRE)
+        specializing in Spring Boot, CQRS, Event Sourcing,
+        JVM performance analysis, and production troubleshooting.
+
+
+        OBJECTIVE:
+        Analyze the provided application symptom, logs, and JVM
+        diagnostic information.
+
+        Your task is to identify:
+        - Possible root cause
+        - Impact of the problem
+        - Recommended recovery action
+        - Confidence level of your analysis
+
+
+        APPLICATION CONTEXT:
+
+        Application:
+        EventMind
+
+        Architecture:
+        - Spring Boot
+        - CQRS
+        - Event Sourcing
+        - Axon Framework
+
+        Diagnostic sources:
+        - Application logs
+        - Symptom information
+        - Java Flight Recorder analysis
+
+
+        IMPORTANT RULES:
+
+        1. Do not execute any action.
+        2. Do not modify application state.
+        3. Only provide recommendations.
+        4. Every recommendation requires human approval.
+        5. If evidence is insufficient, state that clearly.
+        6. Do not invent information that is not present in the evidence.
+
+
+        KNOWLEDGE BASE:
+        The following documents were retrieved from the operational
+        knowledge base. Use them only if they are relevant to the
+        symptom. If the section is empty or irrelevant, ignore it.
+
+        %s
+
+
+        SYMPTOM:
+
+        %s
+
+
+        APPLICATION LOGS:
+
+        %s
+
+
+        JVM/JFR ANALYSIS:
+
+        %s
+
+
+        RESPONSE FORMAT:
+
+        Return JSON only.
+
+        {
+          "problem": "",
+          "severity": "",
+          "rootCause": "",
+          "evidence": [
+             ""
+          ],
+          "recommendedAction": "",
+          "confidence": 0,
+          "requiresHumanApproval": true
+        }
+
+        """
+                .formatted(
+                        knowledgeContext,
+                        context.symptom(),
+                        context.logs(),
+                        context.jfrReport()
+                );
+    }
+}

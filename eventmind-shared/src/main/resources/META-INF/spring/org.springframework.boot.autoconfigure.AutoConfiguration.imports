@@ -1,0 +1,3 @@
+com.ravi.eventmind.shared.config.AxonConfig
+com.ravi.eventmind.shared.config.ProblemDetailAutoConfiguration
+com.ravi.eventmind.shared.config.CorrelationIdAutoConfiguration

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eventmind.ravi.dev/schema/symptom-command-request.schema.json",
+  "title": "SymptomCommandRequest",
+  "description": "Request body accepted by POST /symptoms. The optional id is the client-supplied idempotency key; if omitted the server generates a UUID.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "origin", "numberOfOccurance"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "origin": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["A", "B", "C", "D", "E"]
+      }
+    },
+    "numberOfOccurance": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

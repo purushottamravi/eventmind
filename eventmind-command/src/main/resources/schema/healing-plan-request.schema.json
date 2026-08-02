@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eventmind.ravi.dev/schema/healing-plan-request.schema.json",
+  "title": "HealingPlanRequest",
+  "description": "Request body accepted by POST /healing/approve.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["problem", "rootCause", "recommendedAction", "requiresApproval"],
+  "properties": {
+    "problem": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "rootCause": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "recommendedAction": {
+      "type": "string",
+      "enum": ["RESTART_SERVICE", "CLEAR_CACHE", "RETRY_COMMAND"]
+    },
+    "requiresApproval": {
+      "type": "boolean"
+    }
+  }
+}

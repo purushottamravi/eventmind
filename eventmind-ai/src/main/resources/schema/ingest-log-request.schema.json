@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://eventmind.ravi.dev/schema/ingest-log-request.schema.json",
+  "title": "IngestLogRequest",
+  "description": "Request body accepted by POST /logs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["message"],
+  "properties": {
+    "level": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "pattern": ".*\\S.*"
+    },
+    "exception": {
+      "type": "string",
+      "maxLength": 4000
+    }
+  }
+}

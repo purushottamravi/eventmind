@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: eventmind-observability
+
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:h2:file:~/data/symptomDB
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      jakarta:
+        persistence:
+          schema-generation:
+            scripts:
+              action: create
+              create-target: axon-schema.sql
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  flyway:
+    enabled: true
+
+server:
+  port: 8083
+
+axon:
+  axonserver:
+    enabled: true
+    servers: ${AXON_AXONSERVER_SERVERS:localhost:8124}
+  serializer:
+    general: jackson
+    events: jackson
+  event-handling:
+    processors:
+      observability:
+        mode: tracking
+
+eventmind:
+  ai:
+    base-url: ${EVENTMIND_AI_BASE_URL:http://localhost:8080}
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] [%X{correlationId:-}] %c{1} - %msg%n"
+  level:
+    org:
+      flywaydb: DEBUG
