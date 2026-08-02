@@ -1,7 +1,7 @@
 package com.ravi.eventmind.observability.aop;
 
 
-import com.ravi.eventmind.observability.jfr.MethodExecutionEvent;
+import com.ravi.eventmind.observability.jfr.event.MethodExecutionEvent;
 import com.ravi.eventmind.observability.logging.ApplicationLogService;
 import com.ravi.eventmind.shared.correlation.CorrelationId;
 import lombok.extern.slf4j.Slf4j;
@@ -11,23 +11,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
 /**
- * Aspect responsible for auditing method execution.
- *
- * <p>This aspect intercepts methods annotated with {@code @AuditLog}
- * and records execution details such as:
- * <ul>
- *     <li>Class name</li>
- *     <li>Method name</li>
- *     <li>Execution duration</li>
- *     <li>Execution status</li>
- *     <li>Exception details</li>
- * </ul>
- *
- * <p>The execution data is stored in application logs and optionally
- * published as a Java Flight Recorder event.
- *
- * @author Purushottam Ravi
- * @since 1.0
+ * Logs every execution of a method tagged with {@code @AuditLog} - which class,
+ * which method, how long it took and whether it succeeded. The details land in
+ * the application log and optionally go out as a JFR event.
  */
 
 

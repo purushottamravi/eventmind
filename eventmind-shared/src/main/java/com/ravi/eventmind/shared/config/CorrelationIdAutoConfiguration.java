@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Registers the shared {@link CorrelationIdFilter} for every EventMind module that
- * exposes a servlet web application. Registered via {@code AutoConfiguration.imports}.
+ * Registers the shared correlation ID filter for every EventMind module that runs
+ * a servlet web app, so requests get stamped without any per-module setup.
  */
 @AutoConfiguration
 @ConditionalOnWebApplication

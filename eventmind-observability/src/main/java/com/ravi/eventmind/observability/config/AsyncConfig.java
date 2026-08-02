@@ -8,8 +8,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 /**
- * Async support for best-effort cross-service pushes (e.g. forwarding log
- * entries to the AI module) so they never block the Axon event processor.
+ * The async executor config for best-effort cross-service pushes (like shipping
+ * log entries to the AI module) so they never block the Axon event processor.
  */
 @Configuration
 @EnableAsync

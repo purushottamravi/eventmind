@@ -1,8 +1,8 @@
 package com.ravi.eventmind.ai.logging;
 
 /**
- * Immutable view of an application log entry used across the AI module's
- * read ports, decoupled from the persistence entity.
+ * An immutable snapshot of one application log entry for the AI module's read
+ * ports, kept separate from the persistence entity.
  */
 public record LogEntry(Long id, String level, String message, String exception) {
 }

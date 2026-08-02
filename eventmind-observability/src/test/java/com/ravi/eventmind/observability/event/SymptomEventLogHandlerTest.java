@@ -1,5 +1,6 @@
 package com.ravi.eventmind.observability.event;
 
+import com.ravi.eventmind.observability.event.client.LogIngestionClient;
 import com.ravi.eventmind.observability.logging.ApplicationLogService;
 import com.ravi.eventmind.shared.events.SymptomCreatedEvent;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Keeps an eye on the symptom handler so it always logs events locally and forwards them on, even when the correlation id is missing.
+ */
 @ExtendWith(MockitoExtension.class)
 class SymptomEventLogHandlerTest {
 

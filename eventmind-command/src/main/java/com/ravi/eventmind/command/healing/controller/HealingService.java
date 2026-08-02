@@ -4,6 +4,9 @@ package com.ravi.eventmind.command.healing.controller;
 import com.ravi.eventmind.command.healing.dto.HealingPlan;
 import org.springframework.stereotype.Service;
 
+/**
+ * Does the actual fixing behind the scenes. Takes a healing plan and runs whatever action it recommends.
+ */
 @Service
 public class HealingService {
 

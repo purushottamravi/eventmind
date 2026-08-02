@@ -1,12 +1,10 @@
 package com.ravi.eventmind.shared.exceptions;
 
 /**
- * Domain/API exception used across EventMind. Framework-agnostic so any module
- * (command, query, AI, observability) can throw it without depending on Axon.
- *
- * <p>When thrown from an Axon command handler or aggregate, the command gateway wraps
- * it in a {@code CommandExecutionException}; the shared RFC-7807 advice unwraps the
- * cause so every module produces the same error contract.
+ * The one exception to throw for domain/API errors, and it's framework-agnostic
+ * so any module can use it without pulling in Axon. If Axon wraps it in a
+ * {@code CommandExecutionException}, the shared advice unwraps the cause so every
+ * module still answers with the same error shape.
  */
 public class EventMindExceptions extends RuntimeException {
 

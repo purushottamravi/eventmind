@@ -3,14 +3,10 @@ package com.ravi.eventmind.shared.correlation;
 import org.slf4j.MDC;
 
 /**
- * Shared correlation ID contract for the EventMind multi-module application.
- *
- * <p>Every REST request is stamped with a correlation ID (either echoed from the
- * {@link #HEADER} inbound header or generated when absent). The ID is kept in the
- * SLF4J {@link MDC} for that request thread so all log statements share it, and is
- * propagated through Axon message {@link #METADATA_KEY metadata} so events emitted
- * downstream (query projection, observability ingestion, AI log store) carry the
- * same trace.</p>
+ * Shared correlation ID contract for the multi-module EventMind app. Every REST
+ * request gets one, either echoed from the inbound header or generated fresh, and
+ * it lives in the SLF4J MDC so all log lines on the thread share it. It also rides
+ * along in Axon message metadata so downstream events keep the same trace.
  */
 public final class CorrelationId {
 

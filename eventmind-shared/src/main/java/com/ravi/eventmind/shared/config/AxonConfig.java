@@ -15,15 +15,11 @@ import org.springframework.context.annotation.Primary;
 import java.util.Map;
 
 /**
- * Single shared Axon configuration, previously duplicated in both the command and
- * query modules. Registered as a Spring Boot auto-configuration so every Axon-based
- * module picks it up automatically.
- *
- * <p>Besides the shared serializers it registers dispatch interceptors that attach
- * the current thread's {@link CorrelationId} (seeded from the REST filter) to every
- * dispatched command and query. The command/event metadata flows with the message
- * across processes, so downstream event handlers can read it via
- * {@code @MetaDataValue("correlationId")}.</p>
+ * The one shared Axon config every EventMind module relies on, registered as a
+ * Spring Boot auto-configuration so nobody has to wire it up by hand. On top of
+ * the shared serializers it attaches the current thread's correlation ID to every
+ * dispatched command and query, so downstream handlers can read it via
+ * {@code @MetaDataValue("correlationId")}.
  */
 @AutoConfiguration
 @ConditionalOnClass({Serializer.class, JacksonSerializer.class})

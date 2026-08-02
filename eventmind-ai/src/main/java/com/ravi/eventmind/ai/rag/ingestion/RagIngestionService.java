@@ -4,6 +4,10 @@ import com.ravi.eventmind.ai.rag.chunker.DocumentChunker;
 import com.ravi.eventmind.ai.rag.embedding.EmbeddingService;
 import com.ravi.eventmind.ai.rag.loader.IDocumentLoader;
 import org.springframework.stereotype.Service;
+/**
+ * Glues the RAG pipeline together: load, chunk, embed, done.
+ * The conductor for ingesting knowledge into the vector store.
+ */
 @Service
 public class RagIngestionService {
     private final IDocumentLoader loader;

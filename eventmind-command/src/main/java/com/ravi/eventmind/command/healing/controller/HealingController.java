@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Takes HTTP calls for approving healing plans, checks the request, and hands the plan over to the service. No business logic lives here.
+ */
 @RestController
 @RequestMapping("/healing")
 public class HealingController {

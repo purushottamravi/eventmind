@@ -15,6 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Makes sure the vector search returns documents and falls back to empty on failure.
+ */
 @ExtendWith(MockitoExtension.class)
 class VectorStoreRagRetrievalServiceTest {
 

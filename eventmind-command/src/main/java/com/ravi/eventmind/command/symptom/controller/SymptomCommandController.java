@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Takes HTTP calls to create symptoms, validates the body, and pushes a command into Axon. No business logic lives here.
+ */
 @RestController
 @RequestMapping("/symptoms")
 @Slf4j

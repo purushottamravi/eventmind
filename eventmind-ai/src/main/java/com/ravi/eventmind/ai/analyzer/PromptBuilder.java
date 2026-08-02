@@ -4,6 +4,10 @@ package com.ravi.eventmind.ai.analyzer;
 import com.ravi.eventmind.ai.model.DiagnosticContext;
 import org.springframework.stereotype.Component;
 
+/**
+ * Rolls the symptom, logs, and JFR report into one big prompt for the LLM.
+ * Does the formatting so the model gets a clean, consistent ask every time.
+ */
 @Component
 public class PromptBuilder {
     public String build(DiagnosticContext context) {

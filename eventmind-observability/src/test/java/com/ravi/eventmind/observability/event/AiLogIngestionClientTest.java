@@ -1,5 +1,6 @@
 package com.ravi.eventmind.observability.event;
 
+import com.ravi.eventmind.observability.event.client.AiLogIngestionClient;
 import com.ravi.eventmind.shared.correlation.CorrelationId;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Proves the AI log client actually posts entries over HTTP with the right payload, and stays calm when the service is down.
+ */
 class AiLogIngestionClientTest {
 
     private HttpServer server;

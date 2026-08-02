@@ -1,7 +1,7 @@
 package com.ravi.eventmind.ai.logging;
 
 /**
- * Write port for the AI module's application log store.
+ * How the AI module writes to its application log store.
  */
 public interface LogStore {
 

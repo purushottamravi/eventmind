@@ -10,6 +10,10 @@ import org.axonframework.eventhandling.EventHandler;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
+/**
+ * Watches the symptom events go by and writes them into the read model so the query
+ * side has something to answer with.
+ */
 @Component
 @Slf4j
 @ProcessingGroup("symptom")

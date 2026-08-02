@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Takes HTTP calls, hands them over to the service, and sends back whatever comes out.
+ * Also has a small ingest endpoint to refresh the knowledge base. No business logic lives here.
+ */
 @RestController
 @RequestMapping("/healing")
 public class HealingRecommendationController {

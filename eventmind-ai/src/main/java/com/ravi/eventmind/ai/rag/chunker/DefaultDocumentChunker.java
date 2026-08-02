@@ -6,6 +6,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Splits long documents into smaller pieces using a token-based splitter.
+ * The "many small chunks" step so embeddings stay manageable.
+ */
 @Component
 public class DefaultDocumentChunker implements DocumentChunker {
     private final TokenTextSplitter splitter;

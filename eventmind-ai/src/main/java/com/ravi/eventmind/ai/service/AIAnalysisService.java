@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+/**
+ * An earlier attempt at AI analysis, now mostly sleeping behind a big comment block.
+ * Kept around for reference, not wired up anywhere.
+ */
 @Service
 public class AIAnalysisService {
 /*

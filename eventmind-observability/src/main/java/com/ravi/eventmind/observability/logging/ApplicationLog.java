@@ -6,16 +6,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * Entity representing application execution logs.
- *
- * <p>Stores information about application events including:
- * <ul>
- *     <li>Execution level</li>
- *     <li>Message</li>
- *     <li>Exception details</li>
- *     <li>Creation timestamp</li>
- * </ul>
- *
+ * The JPA entity behind the {@code APPLICATION_LOG} table - one row per logged
+ * event, carrying the level, message, exception details and a timestamp.
  */
 
 @Entity

@@ -23,6 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Proves the healing controller behaves itself, including rejecting bad plans, so we don't break things by accident.
+ */
 @ExtendWith(MockitoExtension.class)
 class HealingControllerTest {
 

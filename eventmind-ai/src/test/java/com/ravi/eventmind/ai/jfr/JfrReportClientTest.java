@@ -11,6 +11,9 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+/**
+ * Checks the JFR client returns the report on success and null on server errors.
+ */
 class JfrReportClientTest {
 
     @Test

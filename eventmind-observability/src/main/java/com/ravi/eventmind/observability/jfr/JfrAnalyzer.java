@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 /**
- * Renders the JVM signal collected by {@link JfrEventListener} into a human-readable
- * report that can be passed to the AI module as the {@code jfrReport} analysis input.
+ * Renders the live JVM signal collected by {@link JfrEventListener} into a plain-text
+ * report ready to hand to the AI module as the {@code jfrReport} analysis input.
  */
 @Service
 public class JfrAnalyzer {

@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Proves the prompt builder stuffs symptoms, logs, JFR, and knowledge context into the prompt.
+ * So we don't accidentally ship a prompt that forgets the user's problem.
+ */
 class PromptBuilderTest {
 
     private final PromptBuilder promptBuilder = new PromptBuilder();

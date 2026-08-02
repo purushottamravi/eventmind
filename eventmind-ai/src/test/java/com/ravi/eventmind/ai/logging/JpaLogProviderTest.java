@@ -17,6 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Verifies recent logs come back mapped from entities, and fail softly when the store is down.
+ */
 @ExtendWith(MockitoExtension.class)
 class JpaLogProviderTest {
 

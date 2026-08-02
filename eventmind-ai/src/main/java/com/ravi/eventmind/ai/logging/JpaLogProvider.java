@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Default {@link LogProvider} backed by the AI module's own log table.
- *
- * <p>Failures reading the log store are isolated: an unavailable store yields an
- * empty context so the analysis and RAG pipeline degrade gracefully.
+ * The default {@link LogProvider}, reading straight from the AI module's own log
+ * table. If the store is unavailable we swallow the error and hand back an empty
+ * context so the analysis and RAG pipeline just chug along.
  */
 @Slf4j
 @Service

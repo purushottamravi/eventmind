@@ -35,6 +35,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+/**
+ * Covers the analyze and approve flows, including rejections, conflicts, and execution failures.
+ */
 @ExtendWith(MockitoExtension.class)
 class HealingRecommendationServiceTest {
 

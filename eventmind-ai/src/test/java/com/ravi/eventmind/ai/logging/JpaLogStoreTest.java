@@ -13,6 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Checks log entries are persisted with and without an exception and correlation id.
+ */
 @ExtendWith(MockitoExtension.class)
 class JpaLogStoreTest {
 

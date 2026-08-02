@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Runs the actual similarity search against the vector store.
+ * If the store misbehaves it quietly returns nothing instead of crashing the request.
+ */
 @Slf4j
 @Service
 public class VectorStoreRagRetrievalService implements RagRetrievalService {

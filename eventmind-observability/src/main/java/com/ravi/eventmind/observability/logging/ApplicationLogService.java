@@ -1,20 +1,14 @@
 package com.ravi.eventmind.observability.logging;
 
+import com.ravi.eventmind.observability.logging.repository.ApplicationLogRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 /**
- * Service responsible for persisting application execution logs.
- *
- * <p>This service stores success and failure information generated
- * during application execution.
- *
- * <p>Logs are persisted using {@link ApplicationLogRepository}.
- *
- * @author Purushottam Ravi
- * @since 1.0
+ * Hands {@link ApplicationLog} rows to the repository for saving - level, message,
+ * optional exception and the correlation ID of the originating request.
  */
 @Service
 public class ApplicationLogService {

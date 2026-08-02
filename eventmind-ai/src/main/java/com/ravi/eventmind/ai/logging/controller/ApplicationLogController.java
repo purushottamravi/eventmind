@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Public ingestion boundary for the AI module's log store.
- *
- * <p>Producers (e.g. the observability service) push operational log entries here;
- * the AI module never reads another service's database.
+ * The public door for pushing log entries into the AI module's log store. Producers
+ * like the observability service call here so the AI module never pokes another
+ * service's database.
  */
 @RestController
 @RequestMapping("/logs")

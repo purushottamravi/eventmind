@@ -11,11 +11,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * Application log entry owned by the AI module.
- *
- * <p>The AI module keeps its own copy of the operational log feed instead of
- * reading the observability module's table directly, so each service owns its
- * data and schema.
+ * One application log row owned by the AI module. We keep our own copy of the
+ * operational feed instead of reading the observability module's table directly,
+ * so each service stays the owner of its data and schema.
  */
 @Entity
 @Data

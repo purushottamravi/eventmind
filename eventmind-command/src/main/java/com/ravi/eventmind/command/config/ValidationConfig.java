@@ -9,6 +9,9 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Wires up the JSON schema validators used to check incoming requests. Spring reads these beans so controllers can just ask for one by name.
+ */
 @Configuration
 public class ValidationConfig {
 

@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The JPA-backed implementation of the recommendation store.
+ * Converts between the model and the entity (evidence lives in the DB as JSON).
+ */
 @Service
 public class JpaHealingRecommendationStore implements HealingRecommendationStore {
 

@@ -21,6 +21,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Exercises the log-ingest endpoint: happy path, correlation id, and validation rejections.
+ */
 @ExtendWith(MockitoExtension.class)
 class ApplicationLogControllerTest {
 

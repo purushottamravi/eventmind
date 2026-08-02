@@ -14,12 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Minimal, dependency-free JSON Schema (draft-07) validator used to enforce the
- * REST request contract defined by a schema resource. Only the keywords used by
- * EventMind schemas are supported: type, required, properties, additionalProperties
- * (boolean), minLength/maxLength/pattern, minimum/maximum/exclusiveMinimum/
- * exclusiveMaximum/multipleOf, enum, items (single schema), minItems/maxItems,
- * uniqueItems, minProperties/maxProperties. Unsupported keywords are ignored.
+ * A small, dependency-free JSON Schema (draft-07) validator that enforces the REST
+ * request contract defined by a schema resource. It only knows the keywords
+ * EventMind schemas actually use — type, required, properties, length/range/pattern,
+ * enum, items, item/property counts, uniqueness — and cheerfully ignores the rest.
  */
 public class JsonSchemaValidator {
 
@@ -196,6 +194,7 @@ public class JsonSchemaValidator {
         if (minLength != null && minLength.isIntegralNumber() && length < minLength.asInt()) {
             errors.add(path + ": must be at least " + minLength.asInt() + " characters");
         }
+
         JsonNode maxLength = nodeSchema.get("maxLength");
         if (maxLength != null && maxLength.isIntegralNumber() && length > maxLength.asInt()) {
             errors.add(path + ": must be at most " + maxLength.asInt() + " characters");

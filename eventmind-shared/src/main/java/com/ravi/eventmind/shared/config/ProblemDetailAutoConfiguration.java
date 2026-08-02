@@ -8,9 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.ProblemDetail;
 
 /**
- * Registers the shared RFC-7807 {@link ProblemDetail} advice for every EventMind
- * module. Registered via {@code AutoConfiguration.imports} and only active when a
- * web application with Spring HTTP support is present.
+ * Registers the shared RFC-7807 problem detail advice for every EventMind module,
+ * but only kicks in when a web app with Spring HTTP support is on the classpath.
  */
 @AutoConfiguration
 @ConditionalOnClass(ProblemDetail.class)

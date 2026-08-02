@@ -9,6 +9,10 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Just the wiring for the JSON schema validator. Loads the symptom-query schema file
+ * and hands back a ready-to-use validator so the controller can check requests with it.
+ */
 @Configuration
 public class ValidationConfig {
 

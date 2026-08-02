@@ -1,5 +1,6 @@
 package com.ravi.eventmind.observability.event;
 
+import com.ravi.eventmind.observability.event.client.LogIngestionClient;
 import com.ravi.eventmind.observability.logging.ApplicationLogService;
 import com.ravi.eventmind.shared.correlation.CorrelationId;
 import com.ravi.eventmind.shared.events.SymptomCreatedEvent;
@@ -10,18 +11,10 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 /**
- * Consumes domain events published by the command side and records them as
- * operational log entries.
- *
- * <p>This is the real observability path: the command module never writes into
- * another service's database. {@link SymptomCreatedEvent} reaches this handler
- * through the Axon event stream, is persisted into {@code APPLICATION_LOG}, and is
- * forwarded to the AI module's {@code POST /logs} ingestion boundary (which feeds
- * the RAG knowledge base).</p>
- *
- * <p>The REST correlation ID is carried as a field on {@link SymptomCreatedEvent}
- * and is persisted and forwarded so the same trace can be followed from the
- * original HTTP request.</p>
+ * Turns incoming {@link SymptomCreatedEvent} events into persisted
+ * {@code APPLICATION_LOG} rows and forwards them to the AI module. The correlation
+ * ID rides along on the event so the whole trace stays followable back to the
+ * original HTTP request.
  */
 @Slf4j
 @Component

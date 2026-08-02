@@ -10,21 +10,10 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 
 /**
- * Streams live Java Flight Recorder events from the running JVM and records the
- * signal into a shared {@link JfrReport}.
- *
- * <p>Subscribed event types:
- * <ul>
- *     <li>{@code jdk.GC.GarbageCollection} - GC pause counts, totals and worst pause;</li>
- *     <li>{@code jdk.CPULoad} - latest machine and JVM CPU load;</li>
- *     <li>{@code jdk.JavaExceptionThrow} - thrown exception counts by class;</li>
- *     <li>{@code com.ravi.eventmind.MethodExecution} - the custom event committed by
- *     {@code AuditAspect} around {@code @AuditLog} methods.</li>
- * </ul>
- *
- * <p>The stream runs on a daemon thread for the lifetime of the context (started/stopped
- * through the Spring {@link Lifecycle} contract), so the report stays always-on without
- * requiring a {@code -XX:StartFlightRecording} file.</p>
+ * Streams live JFR events off the running JVM and funnels them into a shared
+ * {@link JfrReport} - GC pauses, CPU load, thrown exceptions and the custom
+ * {@code MethodExecution} event. Runs on a daemon thread for the life of the
+ * context, so the report is always-on without a {@code -XX:StartFlightRecording} file.
  */
 @Slf4j
 @Component

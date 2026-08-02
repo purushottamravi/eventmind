@@ -3,7 +3,7 @@ package com.ravi.eventmind.ai.logging;
 import java.util.List;
 
 /**
- * Read port for the AI module's application log store.
+ * How the AI module reads back from its application log store.
  */
 public interface LogProvider {
 

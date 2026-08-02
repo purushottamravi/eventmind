@@ -2,6 +2,10 @@ package com.ravi.eventmind.ai.model;
 
 import java.util.List;
 
+/**
+ * The full recommendation the AI produces, plus a few convenience methods
+ * to make tweaked copies with a new id, symptom id, or status.
+ */
 public record HealingRecommendation(String recommendationId,
                                     String symptomId,
                                     String problem,

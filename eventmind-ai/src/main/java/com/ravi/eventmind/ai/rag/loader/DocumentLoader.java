@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 
+/**
+ * Gathers everything we want searchable: knowledge docs from the DB and recent logs.
+ * Turns them into Spring AI documents with a bit of metadata each.
+ */
 @Component
 public class DocumentLoader implements IDocumentLoader {
 

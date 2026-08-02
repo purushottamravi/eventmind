@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Makes sure approvals and rejections come back with the right result.
+ */
 class HumanApprovalServiceTest {
 
     private final HumanApprovalService service = new HumanApprovalService();

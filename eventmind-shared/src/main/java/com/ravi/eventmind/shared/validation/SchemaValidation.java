@@ -7,9 +7,9 @@ import com.ravi.eventmind.shared.exceptions.EventMindReasonsEnum;
 import java.util.List;
 
 /**
- * Shared entry point for enforcing the REST request contract defined by a JSON schema
- * resource. Violations surface as an {@link EventMindExceptions} with the shared
- * {@code INVALID_REQUEST_BODY} code so every module returns the same RFC-7807 body.
+ * Shared front door for validating a REST request against a JSON schema. Violations
+ * surface as an EventMindExceptions with the shared INVALID_REQUEST_BODY code, so
+ * every module answers with the same RFC-7807 body.
  */
 public final class SchemaValidation {
 

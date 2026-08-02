@@ -6,12 +6,15 @@ import com.ravi.eventmind.ai.model.HealingRecommendation;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
+/**
+ * The actual chat with the model. Takes a diagnostic context, fires the prompt,
+ * and turns whatever the LLM answers into a recommendation.
+ */
 @Service
 public class SymptomAnalyzerService {
 
     private final PromptBuilder promptBuilder;
     private final ChatClient chatClient;
-
 
     public SymptomAnalyzerService(PromptBuilder promptBuilder, ChatClient.Builder builder) {
         this.promptBuilder = promptBuilder;

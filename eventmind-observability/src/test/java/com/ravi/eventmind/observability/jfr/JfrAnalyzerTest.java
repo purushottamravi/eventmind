@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Checks that the JFR analyzer turns the collected numbers into a readable report, and shows n/a when there's no data to talk about.
+ */
 class JfrAnalyzerTest {
 
     @Test

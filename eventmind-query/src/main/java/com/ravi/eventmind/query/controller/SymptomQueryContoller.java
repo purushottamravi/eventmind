@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 
+/**
+ * The front door for symptom queries. Takes HTTP calls, runs them past the schema
+ * validator, asks the query gateway, and sends the answers back as JSON.
+ */
 @RestController
 @RequestMapping("/symptoms")
 @Slf4j

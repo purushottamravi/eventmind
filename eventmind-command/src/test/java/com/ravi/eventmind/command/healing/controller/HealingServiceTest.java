@@ -3,6 +3,9 @@ package com.ravi.eventmind.command.healing.controller;
 import com.ravi.eventmind.command.healing.dto.HealingPlan;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Proves the healing service handles each recommended action without blowing up.
+ */
 class HealingServiceTest {
 
     private final HealingService healingService = new HealingService();

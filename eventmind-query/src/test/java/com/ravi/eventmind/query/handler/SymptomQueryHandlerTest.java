@@ -18,6 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+/**
+ * Proves the query handler filters, pages, and maps symptoms properly, so the read
+ * model answers actually make sense.
+ */
 @ExtendWith(MockitoExtension.class)
 class SymptomQueryHandlerTest {
 

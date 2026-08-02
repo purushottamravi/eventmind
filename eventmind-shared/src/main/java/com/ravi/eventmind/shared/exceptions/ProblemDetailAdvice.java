@@ -13,10 +13,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.net.URI;
 
 /**
- * Single shared RFC-7807 {@link ProblemDetail} advice. Registered as a Spring Boot
- * auto-configuration so every EventMind module returns the same error contract:
- * {@code type}/{@code title}/{@code status}/{@code detail} plus the EventMind
- * {@code errorCode} and message {@code key} as custom properties.
+ * The one place that turns exceptions into RFC-7807 problem+json responses for
+ * every EventMind module. Every error body comes out the same way: the standard
+ * type/title/status/detail fields plus an EventMind errorCode and message key as
+ * custom properties.
  */
 @RestControllerAdvice
 public class ProblemDetailAdvice {

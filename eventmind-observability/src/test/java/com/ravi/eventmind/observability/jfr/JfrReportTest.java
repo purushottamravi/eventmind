@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Proves the report actually collects GC, CPU and method stats into a snapshot, and that the snapshot stays frozen even when new events roll in.
+ */
 class JfrReportTest {
 
     @Test

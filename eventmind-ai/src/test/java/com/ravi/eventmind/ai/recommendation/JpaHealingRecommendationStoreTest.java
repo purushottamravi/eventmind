@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Proves the store saves, reads, and transitions recommendations with the repository.
+ */
 @ExtendWith(MockitoExtension.class)
 class JpaHealingRecommendationStoreTest {
 

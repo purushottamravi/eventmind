@@ -29,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Proves the symptom controller parses, validates, and dispatches commands the way it should.
+ */
 @ExtendWith(MockitoExtension.class)
 class SymptomCommandControllerTest {
 

@@ -13,6 +13,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Answers the "give me symptoms" questions. Pokes the repository, filters by name
+ * when asked, pages the results, and turns entities into the API-friendly model.
+ */
 @Component
 public class SymptomQueryHandler {
     private final QuerySymptomRepository repository;

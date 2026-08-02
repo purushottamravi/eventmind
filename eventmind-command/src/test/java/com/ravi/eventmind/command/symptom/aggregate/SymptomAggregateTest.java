@@ -16,6 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
 
+/**
+ * Proves the aggregate creates symptoms, applies events, and rejects nonsense input, so we don't break things by accident.
+ */
 class SymptomAggregateTest {
 
     @Test

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 /**
- * Default {@link LogStore} persisting into the AI module's own log table.
+ * The default {@link LogStore}, saving entries into the AI module's own log table.
  */
 @Service
 public class JpaLogStore implements LogStore {

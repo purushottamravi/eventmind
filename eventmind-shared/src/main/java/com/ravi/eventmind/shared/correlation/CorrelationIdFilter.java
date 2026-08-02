@@ -10,13 +10,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Stamps every inbound REST request with a correlation ID.
- *
- * <p>The ID is taken from the {@code X-Correlation-Id} header when present and
- * generated otherwise, then exposed through the SLF4J {@link MDC} for the duration
- * of the request so every log statement in the thread carries it. Axon dispatch
- * interceptors read the same value from the MDC and attach it to message metadata,
- * which carries the ID across process boundaries (events, forwarded headers).</p>
+ * Stamps every inbound REST request with a correlation ID, taken from the
+ * {@code X-Correlation-Id} header when present or generated otherwise. It stays in
+ * the SLF4J MDC for the whole request so every log statement and Axon message
+ * carries the same trace across process boundaries.
  */
 public class CorrelationIdFilter extends OncePerRequestFilter {
 

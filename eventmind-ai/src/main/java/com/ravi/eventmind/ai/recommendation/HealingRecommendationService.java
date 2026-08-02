@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * The heart of the module. Asks the AI for a recommendation, stores it,
+ * and walks it through approval, execution, or rejection.
+ */
 @Slf4j
 @Service
 public class HealingRecommendationService {

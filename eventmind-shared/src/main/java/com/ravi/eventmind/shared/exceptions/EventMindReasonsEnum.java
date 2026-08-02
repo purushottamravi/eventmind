@@ -1,5 +1,9 @@
 package com.ravi.eventmind.shared.exceptions;
 
+/**
+ * The handful of reasons this app can use to explain itself when things go sideways.
+ * Keeps error codes and messages in one place so we all stay honest.
+ */
 public enum EventMindReasonsEnum implements IReason {
 
     ID_IS_MANDATORY("symptom.can.found.by.id", "C001"),

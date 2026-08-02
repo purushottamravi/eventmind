@@ -25,6 +25,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Proves the controller behaves itself: returns symptoms, handles empty results,
+ * and tells users to knock it off when they ask for nonsense pagination.
+ */
 @ExtendWith(MockitoExtension.class)
 class SymptomQueryContollerTest {
 

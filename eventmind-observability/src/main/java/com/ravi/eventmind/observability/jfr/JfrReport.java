@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Thread-safe accumulator of the JVM metrics collected from the live JFR stream.
- *
- * <p>Written to by {@link JfrEventListener} on the recording-stream thread and read
- * by {@link JfrAnalyzer} when a report is requested, so every mutation is
- * synchronized and snapshots are immutable copies.</p>
+ * An in-memory snapshot of what the JVM has been up to - GC pauses, CPU load,
+ * method execution times and thrown exceptions. {@link JfrEventListener} writes
+ * to it and {@link JfrAnalyzer} reads immutable copies, so everything is
+ * synchronized.
  */
 @Component
 public class JfrReport {

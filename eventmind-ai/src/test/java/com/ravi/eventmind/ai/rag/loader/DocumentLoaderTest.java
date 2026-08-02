@@ -16,6 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+/**
+ * Proves the loader combines knowledge documents and recent logs into one list.
+ */
 @ExtendWith(MockitoExtension.class)
 class DocumentLoaderTest {
 

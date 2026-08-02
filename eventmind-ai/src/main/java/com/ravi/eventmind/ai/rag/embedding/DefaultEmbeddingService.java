@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Pushes documents into the vector store, which does the embedding heavy lifting.
+ * Simple pass-through, nothing fancy.
+ */
 @Service
 public class DefaultEmbeddingService implements EmbeddingService {
     private final VectorStore vectorStore;

@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * A row in the recommendations table, one saved recommendation per row.
+ * Plain JPA, used mostly by the store when moving data in and out of the DB.
+ */
 @Entity
 @Table(name = "HEALING_RECOMMENDATION")
 @Data

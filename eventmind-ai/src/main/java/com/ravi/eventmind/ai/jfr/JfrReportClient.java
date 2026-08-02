@@ -6,12 +6,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 /**
- * Fetches the live JFR report produced by the observability module's
- * {@code GET /jfr/report} endpoint, so the LLM analysis can run on the real JVM
- * signal without the caller having to provide it.
- *
- * <p>Fetching is best-effort: if the observability module is unreachable the
- * analysis proceeds without the report instead of failing.</p>
+ * Pulls the live JFR report from the observability module's {@code GET /jfr/report}
+ * endpoint so the LLM analysis sees the real JVM signal without the caller handing
+ * it over. Best-effort: if observability is down we just run without the report.
  */
 @Slf4j
 @Component

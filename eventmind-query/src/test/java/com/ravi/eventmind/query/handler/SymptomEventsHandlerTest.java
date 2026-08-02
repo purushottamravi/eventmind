@@ -12,6 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Proves the event handler turns a SymptomCreatedEvent into a saved row, so we don't
+ * lose symptoms on the way into the read model.
+ */
 @ExtendWith(MockitoExtension.class)
 class SymptomEventsHandlerTest {
 

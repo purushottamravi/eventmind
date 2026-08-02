@@ -1,4 +1,4 @@
-package com.ravi.eventmind.observability.event;
+package com.ravi.eventmind.observability.event.client;
 
 import com.ravi.eventmind.shared.correlation.CorrelationId;
 import lombok.extern.slf4j.Slf4j;
@@ -12,16 +12,10 @@ import org.springframework.web.client.RestClient;
 import java.util.Map;
 
 /**
- * Default {@link LogIngestionClient} pushing entries to the AI module's
- * {@code POST /logs} ingestion endpoint.
- *
- * <p>The push runs on the {@code logIngestionExecutor} thread pool so a slow or
- * unavailable AI service never stalls the tracking processor, and failures are
- * isolated (logged and skipped) per the failure-isolation design.</p>
- *
- * <p>The correlation ID is forwarded as the {@code X-Correlation-Id} header so the
- * AI module can trace the entry back to the original REST request, and is placed
- * into the MDC of the async thread for its own log lines.</p>
+ * The default {@link LogIngestionClient}: ships log entries to the AI module's
+ * {@code POST /logs} endpoint. Pushes run on their own async thread pool so a slow
+ * AI service never stalls the event processor, and the correlation ID travels along
+ * as an {@code X-Correlation-Id} header (and into the MDC) to keep the trace intact.
  */
 @Slf4j
 @Component

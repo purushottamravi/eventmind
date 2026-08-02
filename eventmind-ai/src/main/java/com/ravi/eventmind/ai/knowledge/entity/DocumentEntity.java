@@ -6,6 +6,10 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+/**
+ * A row in the knowledge base that comes to life for a moment when we load it.
+ * Plain JPA mapping, no behavior to speak of.
+ */
 @Entity
 @Data
 @Table(name = "documents")

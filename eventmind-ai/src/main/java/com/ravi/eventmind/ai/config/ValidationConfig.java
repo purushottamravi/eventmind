@@ -9,6 +9,10 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Wires up the JSON schema validators from their resource files.
+ * Just bean plumbing, nothing clever.
+ */
 @Configuration
 public class ValidationConfig {
 

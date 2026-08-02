@@ -13,6 +13,9 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.util.UUID;
 
+/**
+ * The single source of truth for a symptom. Commands come in, events go out, and everything that happened is remembered.
+ */
 @Aggregate
 @Slf4j
 public class SymptomAggregate {

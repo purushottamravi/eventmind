@@ -1,5 +1,6 @@
-package com.ravi.eventmind.observability.jfr;
+package com.ravi.eventmind.observability.jfr.controller;
 
+import com.ravi.eventmind.observability.jfr.JfrAnalyzer;
 import com.ravi.eventmind.shared.annotations.AuditLog;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,12 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Surfaces the live JFR report produced by {@link JfrAnalyzer}.
- *
- * <p>The {@link AuditLog} annotation makes the shared {@code AuditAspect} fire on every
- * report generation: the call is recorded into {@code APPLICATION_LOG} and a
- * {@code MethodExecutionEvent} is committed to the JFR stream, which the listener
- * then feeds back into the report.</p>
+ * Exposes the live JFR report produced by {@link JfrAnalyzer} over HTTP. The
+ * {@link AuditLog} tag means each request gets recorded into the application log
+ * and committed back into the JFR stream via the listener.
  */
 @RestController
 @RequestMapping("/jfr")

@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Hands back the stored knowledge documents when someone asks.
+ * Thin wrapper around the repository, nothing more.
+ */
 @Service
 public class DocumentService {
     private final DocumentRepository repository;
