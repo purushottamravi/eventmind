@@ -4,6 +4,16 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Maven module scaffolding (Spring Initializr boilerplate duplicated in each submodule) ###
+eventmind-*/mvnw
+eventmind-*/mvnw.cmd
+eventmind-*/.mvn/
+eventmind-*/.gitattributes
+eventmind-*/.gitignore
+
+### Generated Hibernate/Axon schema exports ###
+axon-schema.sql
+
 ### STS ###
 .apt_generated
 .classpath
@@ -22,6 +32,17 @@ target/
 *.jfr
 *.db
 *.mv.db
+local.properties
+
+### Runtime / crash artifacts ###
+*.log
+hs_err_pid*.log
+replay_pid*.log
+*.hprof
+
+### OS cruft ###
+Thumbs.db
+.DS_Store
 
 ### NetBeans ###
 /nbproject/private/
