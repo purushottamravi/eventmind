@@ -1,4 +1,37 @@
 services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: eventmind-postgres
+    hostname: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=eventmind
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # First-boot init scripts (CREATE EXTENSION vector, ...)
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d eventmind"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: eventmind-ollama
+    hostname: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    # Pull the chat model once so the AI module can analyse out of the box:
+    #   docker compose exec ollama ollama pull llama3.1
+
   axonserver:
     image: axoniq/axonserver:2024.2.2
     container_name: eventmind-axonserver
@@ -16,5 +49,7 @@ services:
       - axonserver-events:/axonserver/events
 
 volumes:
+  postgres-data:
+  ollama-models:
   axonserver-data:
   axonserver-events:

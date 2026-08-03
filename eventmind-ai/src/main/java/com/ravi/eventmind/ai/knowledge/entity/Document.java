@@ -1,10 +1,12 @@
 package com.ravi.eventmind.ai.knowledge.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * A row in the knowledge base that comes to life for a moment when we load it.
@@ -13,7 +15,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "documents")
-public class DocumentEntity {
+public class Document {
 
     @Id
     private Long id;
@@ -22,7 +24,8 @@ public class DocumentEntity {
 
     private String type;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(columnDefinition = "text")
     private String content;
 
     private String domain;

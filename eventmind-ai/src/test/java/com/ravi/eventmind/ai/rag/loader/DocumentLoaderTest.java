@@ -1,6 +1,5 @@
 package com.ravi.eventmind.ai.rag.loader;
 
-import com.ravi.eventmind.ai.knowledge.entity.DocumentEntity;
 import com.ravi.eventmind.ai.knowledge.repository.DocumentRepository;
 import com.ravi.eventmind.ai.logging.LogEntry;
 import com.ravi.eventmind.ai.logging.LogProvider;
@@ -30,7 +29,7 @@ class DocumentLoaderTest {
 
     @Test
     void load_shouldCombineDocumentsAndLogs() {
-        DocumentEntity entity = new DocumentEntity();
+        com.ravi.eventmind.ai.knowledge.entity.Document entity = new com.ravi.eventmind.ai.knowledge.entity.Document();
         entity.setId(1L);
         entity.setSource("runbook");
         entity.setType("guide");
@@ -50,7 +49,7 @@ class DocumentLoaderTest {
 
     @Test
     void load_shouldReturnDocumentsWhenNoLogs() {
-        DocumentEntity entity = new DocumentEntity();
+        com.ravi.eventmind.ai.knowledge.entity.Document entity = new com.ravi.eventmind.ai.knowledge.entity.Document();
         entity.setId(1L);
         entity.setSource("runbook");
         entity.setType("guide");

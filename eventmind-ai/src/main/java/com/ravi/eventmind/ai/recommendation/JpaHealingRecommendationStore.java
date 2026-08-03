@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ravi.eventmind.ai.model.Evidence;
-import com.ravi.eventmind.ai.model.HealingRecommendation;
 import com.ravi.eventmind.ai.model.RecommendationStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +29,14 @@ public class JpaHealingRecommendationStore implements HealingRecommendationStore
 
     @Override
     @Transactional
-    public HealingRecommendation save(HealingRecommendation recommendation) {
+    public com.ravi.eventmind.ai.model.HealingRecommendation save(
+            com.ravi.eventmind.ai.model.HealingRecommendation recommendation) {
         repository.save(toEntity(recommendation));
         return recommendation;
     }
 
     @Override
-    public Optional<HealingRecommendation> findById(String recommendationId) {
+    public Optional<com.ravi.eventmind.ai.model.HealingRecommendation> findById(String recommendationId) {
         return repository.findById(recommendationId).map(this::toModel);
     }
 
@@ -46,8 +46,8 @@ public class JpaHealingRecommendationStore implements HealingRecommendationStore
         return repository.transitionStatus(recommendationId, from, to) > 0;
     }
 
-    private HealingRecommendationEntity toEntity(HealingRecommendation recommendation) {
-        HealingRecommendationEntity entity = new HealingRecommendationEntity();
+    private HealingRecommendation toEntity(com.ravi.eventmind.ai.model.HealingRecommendation recommendation) {
+        HealingRecommendation entity = new HealingRecommendation();
         entity.setRecommendationId(recommendation.recommendationId());
         entity.setSymptomId(recommendation.symptomId());
         entity.setProblem(recommendation.problem());
@@ -62,8 +62,8 @@ public class JpaHealingRecommendationStore implements HealingRecommendationStore
         return entity;
     }
 
-    private HealingRecommendation toModel(HealingRecommendationEntity entity) {
-        return new HealingRecommendation(
+    private com.ravi.eventmind.ai.model.HealingRecommendation toModel(HealingRecommendation entity) {
+        return new com.ravi.eventmind.ai.model.HealingRecommendation(
                 entity.getRecommendationId(),
                 entity.getSymptomId(),
                 entity.getProblem(),

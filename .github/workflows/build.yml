@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # .env is gitignored, so the datasource passwords referenced by each
+      # module's application.yml are provided here. Tests boot against local
+      # H2 databases (Axon Server / Postgres are NOT required for the test suite).
+      DB_PASSWORD: postgres
+      QUERY_DB_PASSWORD: password
+      OBSERVABILITY_DB_PASSWORD: password
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Prepare H2 data directory
+        run: mkdir -p "$HOME/data"
+
+      - name: Build, test and package
+        run: mvn --batch-mode --no-transfer-progress verify

@@ -1,4 +1,4 @@
-package com.ravi.eventmind.observability.jfr.event;
+package com.ravi.eventmind.shared.aop.event;
 
 import jdk.jfr.Category;
 import jdk.jfr.Event;
@@ -6,7 +6,8 @@ import jdk.jfr.Label;
 import jdk.jfr.Name;
 
 /**
- * Snapshots one method call while it's running so the JVM can tell us about it later. Just a plain data carrier, no brains involved.
+ * Snapshots one audited method call while it's running so the JVM can tell us
+ * about it later. Just a plain data carrier, no brains involved.
  */
 @Name("com.ravi.eventmind.MethodExecution")
 @Category({"EventMind", "Application"})

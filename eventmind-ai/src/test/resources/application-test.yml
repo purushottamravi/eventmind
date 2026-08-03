@@ -1,0 +1,17 @@
+# Test-only context: boots the AI Spring context without Postgres/Ollama.
+# The pgvector auto-configuration is excluded and replaced by an in-memory
+# VectorStore stub (see EventmindAiApplicationTests); the chat/embedding models
+# are created lazily by Spring AI and never contacted during a context boot.
+spring:
+  datasource:
+    url: jdbc:h2:mem:eventmind-ai;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
+  jpa:
+    hibernate:
+      ddl-auto: create
+  flyway:
+    enabled: false
+  autoconfigure:
+    exclude: org.springframework.ai.vectorstore.pgvector.autoconfigure.PgVectorStoreAutoConfiguration

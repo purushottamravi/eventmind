@@ -1,6 +1,6 @@
 package com.ravi.eventmind.ai.logging;
 
-import com.ravi.eventmind.ai.logging.entity.ApplicationLogEntity;
+import com.ravi.eventmind.ai.logging.entity.ApplicationLog;
 import com.ravi.eventmind.ai.logging.repository.ApplicationLogRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ public class JpaLogStore implements LogStore {
     @Override
     @Transactional
     public void save(String level, String message, String exception, String correlationId) {
-        ApplicationLogEntity entity = new ApplicationLogEntity();
+        ApplicationLog entity = new ApplicationLog();
         entity.setCreatedAt(LocalDateTime.now());
         entity.setLevel(level);
         entity.setMessage(message);

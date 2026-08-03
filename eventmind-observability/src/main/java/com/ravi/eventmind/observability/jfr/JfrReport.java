@@ -15,7 +15,7 @@ import java.util.Map;
 @Component
 public class JfrReport {
 
-    /** Name of the custom event committed by {@code AuditAspect} on {@code @AuditLog} methods. */
+    /** Name of the custom event committed by the shared audit aspect on {@code @AuditLog} methods. */
     public static final String METHOD_EXECUTION_EVENT = "com.ravi.eventmind.MethodExecution";
 
     private long gcCount;

@@ -1,6 +1,6 @@
 package com.ravi.eventmind.ai.logging;
 
-import com.ravi.eventmind.ai.logging.entity.ApplicationLogEntity;
+import com.ravi.eventmind.ai.logging.entity.ApplicationLog;
 import com.ravi.eventmind.ai.logging.repository.ApplicationLogRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class JpaLogProviderTest {
 
     @Test
     void recentLogs_shouldMapEntitiesToEntries() {
-        ApplicationLogEntity entity = new ApplicationLogEntity();
+        ApplicationLog entity = new ApplicationLog();
         entity.setId(7L);
         entity.setCreatedAt(LocalDateTime.now());
         entity.setLevel("ERROR");

@@ -1,15 +1,17 @@
 package com.ravi.eventmind.ai.recommendation;
 
 import com.ravi.eventmind.ai.model.RecommendationStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +23,7 @@ import java.time.LocalDateTime;
 @Table(name = "HEALING_RECOMMENDATION")
 @Data
 @NoArgsConstructor
-public class HealingRecommendationEntity {
+public class HealingRecommendation {
 
     @Id
     private String recommendationId;
@@ -34,7 +36,8 @@ public class HealingRecommendationEntity {
 
     private String rootCause;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(columnDefinition = "text")
     private String evidence;
 
     private String suggestedAction;

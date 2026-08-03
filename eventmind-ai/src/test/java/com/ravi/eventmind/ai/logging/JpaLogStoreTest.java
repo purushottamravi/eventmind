@@ -1,6 +1,6 @@
 package com.ravi.eventmind.ai.logging;
 
-import com.ravi.eventmind.ai.logging.entity.ApplicationLogEntity;
+import com.ravi.eventmind.ai.logging.entity.ApplicationLog;
 import com.ravi.eventmind.ai.logging.repository.ApplicationLogRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class JpaLogStoreTest {
 
         store.save("ERROR", "Execution failed", "cannot restart", "corr-123");
 
-        ArgumentCaptor<ApplicationLogEntity> captor = ArgumentCaptor.forClass(ApplicationLogEntity.class);
+        ArgumentCaptor<ApplicationLog> captor = ArgumentCaptor.forClass(ApplicationLog.class);
         verify(repository).save(captor.capture());
         assertEquals("ERROR", captor.getValue().getLevel());
         assertEquals("Execution failed", captor.getValue().getMessage());
@@ -43,7 +43,7 @@ class JpaLogStoreTest {
 
         store.save("INFO", "Completed successfully", null, null);
 
-        ArgumentCaptor<ApplicationLogEntity> captor = ArgumentCaptor.forClass(ApplicationLogEntity.class);
+        ArgumentCaptor<ApplicationLog> captor = ArgumentCaptor.forClass(ApplicationLog.class);
         verify(repository).save(captor.capture());
         assertEquals("INFO", captor.getValue().getLevel());
         assertEquals("Completed successfully", captor.getValue().getMessage());

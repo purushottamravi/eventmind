@@ -233,7 +233,7 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 | Messaging / DDD| Axon Framework 4.11 (command/event/query gateways, aggregates, event sourcing), Axon Server 2024.2.2 |
 | AI             | Spring AI 1.0.0 (`spring-ai-starter-model-ollama`, `spring-ai-starter-vector-store-pgvector`)|
 | LLM            | Ollama (`llama3.1`, default base-url `http://localhost:11434`)                              |
-| Data           | JPA / Hibernate; H2 (command/query/observability); Postgres + pgvector (AI); Flyway migrations |
+| Data           | JPA / Hibernate; H2 (query/observability); Postgres + pgvector (AI); Flyway migrations |
 | Validation     | Jackson + JSON-Schema validation (`JsonSchemaValidator`, RFC 7807 `ProblemDetail` errors)   |
 | Observability  | Java Flight Recorder (GC, CPU load, exceptions, custom `MethodExecutionEvent`), `@AuditLog` AOP aspect, correlation IDs in MDC |
 | Build          | Maven multi-module reactor, Maven Wrapper, `maven-dependency-plugin:analyze` hygiene gate    |
@@ -241,7 +241,7 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 ## Prerequisites
 
 - JDK 21
-- Docker (for Axon Server)
+- Docker — `docker compose` provides Axon Server, Postgres + pgvector, and Ollama
 - Ollama with a model configured (default `llama3.1`) — the LLM call degrades gracefully
   to a default recommendation when unavailable
 - Postgres (default `localhost:5432/eventmind`)
@@ -252,10 +252,9 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
   DB_URL=jdbc:postgresql://localhost:5432/eventmind
   DB_USERNAME=
   DB_PASSWORD=
-  COMMAND_DB_PASSWORD=
   QUERY_DB_PASSWORD=
   OBSERVABILITY_DB_PASSWORD=
-  ```
+```
 
   Each module loads it automatically via
   `spring.config.import=optional:file:../.env[.properties]`, so the file must be
@@ -267,13 +266,16 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 1. Create the `.env` file at the repository root (see [Prerequisites](#prerequisites)) with
    the local database passwords. It is git-ignored, so it is never committed.
 
-2. Start Axon Server:
+2. Start the infrastructure (Axon Server, Postgres + pgvector, Ollama):
 
    ```bash
    docker compose up -d
    ```
 
    Axon Server UI: `http://localhost:8024` (gRPC on `8124`).
+   Postgres: `localhost:5432/eventmind` (user `postgres`, password from `DB_PASSWORD`).
+   Ollama: `localhost:11434` (pull the default model once with
+   `docker compose exec ollama ollama pull llama3.1`).
 
 3. Build and run tests (offline, using the local `.m2` cache):
 
@@ -289,11 +291,12 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 ## Running the Demo
 
 A minimal end-to-end run needs Axon Server (the shared event bus) plus the four modules.
-Docker provides Axon Server; Postgres and Ollama are required only for the AI analysis steps.
+`docker compose up -d` provides Axon Server, Postgres + pgvector, and Ollama; Postgres and
+Ollama are used only by the AI analysis steps.
 Make sure the root `.env` file exists first (see [Prerequisites](#prerequisites)); without it
 the modules will not start.
 
-1. **Start Axon Server** (Docker):
+1. **Start the infrastructure** (Docker):
 
    ```bash
    docker compose up -d

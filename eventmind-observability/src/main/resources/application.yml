@@ -18,13 +18,6 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: validate
-    properties:
-      jakarta:
-        persistence:
-          schema-generation:
-            scripts:
-              action: create
-              create-target: axon-schema.sql
 
   h2:
     console:

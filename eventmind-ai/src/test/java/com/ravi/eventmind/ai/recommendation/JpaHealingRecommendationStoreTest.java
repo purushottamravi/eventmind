@@ -2,7 +2,6 @@ package com.ravi.eventmind.ai.recommendation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ravi.eventmind.ai.model.Evidence;
-import com.ravi.eventmind.ai.model.HealingRecommendation;
 import com.ravi.eventmind.ai.model.RecommendationStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,14 +31,15 @@ class JpaHealingRecommendationStoreTest {
 
     @Test
     void save_shouldPersistEntityWithEvidenceAsJson() {
-        HealingRecommendation recommendation = new HealingRecommendation("r1", "s1", "OOM", "HIGH",
+        com.ravi.eventmind.ai.model.HealingRecommendation recommendation =
+                new com.ravi.eventmind.ai.model.HealingRecommendation("r1", "s1", "OOM", "HIGH",
                 "heap", List.of(new Evidence("LOG", "x", "HIGH")), "RESTART_SERVICE", 90, true,
                 RecommendationStatus.PENDING_APPROVAL);
 
         JpaHealingRecommendationStore store = new JpaHealingRecommendationStore(repository, objectMapper);
         store.save(recommendation);
 
-        ArgumentCaptor<HealingRecommendationEntity> captor = ArgumentCaptor.forClass(HealingRecommendationEntity.class);
+        ArgumentCaptor<HealingRecommendation> captor = ArgumentCaptor.forClass(HealingRecommendation.class);
         verify(repository).save(captor.capture());
         assertEquals("r1", captor.getValue().getRecommendationId());
         assertEquals(RecommendationStatus.PENDING_APPROVAL, captor.getValue().getStatus());
@@ -48,7 +48,7 @@ class JpaHealingRecommendationStoreTest {
 
     @Test
     void findById_shouldMapEntityBackToModel() {
-        HealingRecommendationEntity entity = new HealingRecommendationEntity();
+        HealingRecommendation entity = new HealingRecommendation();
         entity.setRecommendationId("r1");
         entity.setSymptomId("s1");
         entity.setProblem("OOM");
@@ -62,7 +62,7 @@ class JpaHealingRecommendationStoreTest {
         when(repository.findById("r1")).thenReturn(Optional.of(entity));
 
         JpaHealingRecommendationStore store = new JpaHealingRecommendationStore(repository, objectMapper);
-        Optional<HealingRecommendation> result = store.findById("r1");
+        Optional<com.ravi.eventmind.ai.model.HealingRecommendation> result = store.findById("r1");
 
         assertTrue(result.isPresent());
         assertEquals("r1", result.get().recommendationId());

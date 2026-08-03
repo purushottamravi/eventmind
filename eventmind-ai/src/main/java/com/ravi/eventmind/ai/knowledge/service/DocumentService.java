@@ -1,6 +1,6 @@
 package com.ravi.eventmind.ai.knowledge.service;
 
-import com.ravi.eventmind.ai.knowledge.entity.DocumentEntity;
+import com.ravi.eventmind.ai.knowledge.entity.Document;
 import com.ravi.eventmind.ai.knowledge.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public class DocumentService {
     public DocumentService(DocumentRepository repository) {
         this.repository = repository;
     }
-    public List<DocumentEntity> getAllDocuments() {
+    public List<Document> getAllDocuments() {
         return repository.findAll();
     }
 }

@@ -90,8 +90,10 @@ class HealingRecommendationServiceTest {
 
     @Test
     void analyze_shouldRejectBlankSymptom() {
-        assertThrows(IllegalArgumentException.class,
+        EventMindExceptions exception = assertThrows(EventMindExceptions.class,
                 () -> service().analyze(new AnalyzeRequest(null, "   ", null, null, null)));
+
+        assertEquals(EventMindReasonsEnum.SYMPTOM_INVALID, exception.getReason());
     }
 
     @Test

@@ -25,6 +25,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Spring AI -->
         <dependency>
@@ -35,6 +41,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Logging -->
         <dependency>
@@ -54,14 +66,36 @@
             <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
         </dependency>
 
+        <!-- Flyway (versioned DDL, mirrors the other modules) -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Tests -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- H2: test-only datasource so the Spring context can boot without Postgres -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- Repackages the thin jar into an executable fat jar -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

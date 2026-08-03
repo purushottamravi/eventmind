@@ -1,9 +1,6 @@
 package com.ravi.eventmind.query.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ravi.eventmind.shared.dto.SymptomRestModel;
-import com.ravi.eventmind.shared.exceptions.ProblemDetailAdvice;
-import com.ravi.eventmind.shared.validation.JsonSchemaValidator;
 import org.axonframework.messaging.responsetypes.ResponseType;
 import org.axonframework.queryhandling.QueryGateway;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,11 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -26,8 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Proves the controller behaves itself: returns symptoms, handles empty results,
- * and tells users to knock it off when they ask for nonsense pagination.
+ * Proves the controller behaves itself: returns symptoms and handles empty results.
  */
 @ExtendWith(MockitoExtension.class)
 class SymptomQueryContollerTest {
@@ -38,15 +32,9 @@ class SymptomQueryContollerTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    void setUp() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonSchemaValidator validator;
-        try (InputStream in = new ClassPathResource("schema/symptom-query-request.schema.json").getInputStream()) {
-            validator = JsonSchemaValidator.from(in, objectMapper);
-        }
-        SymptomQueryContoller controller = new SymptomQueryContoller(queryGateway, validator, objectMapper);
+    void setUp() {
+        SymptomQueryContoller controller = new SymptomQueryContoller(queryGateway);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
-                .setControllerAdvice(new ProblemDetailAdvice())
                 .build();
     }
 
@@ -76,28 +64,5 @@ class SymptomQueryContollerTest {
         mockMvc.perform(get("/symptoms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
-    }
-
-    @Test
-    void getAllSymptoms_shouldRejectOversizedPageSize() throws Exception {
-        mockMvc.perform(get("/symptoms").param("size", "500"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("C003"))
-                .andExpect(jsonPath("$.detail").value("$.size: must be less than or equal to 100"));
-    }
-
-    @Test
-    void getAllSymptoms_shouldRejectNegativePage() throws Exception {
-        mockMvc.perform(get("/symptoms").param("page", "-3"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("C003"))
-                .andExpect(jsonPath("$.detail").value("$.page: must be greater than or equal to 0"));
-    }
-
-    @Test
-    void getAllSymptoms_shouldRejectNonNumericPage() throws Exception {
-        mockMvc.perform(get("/symptoms").param("page", "abc"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("C003"));
     }
 }

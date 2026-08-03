@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
  * Spring Data handle on recommendations, plus a guarded update to flip status atomically.
  */
 @Repository
-public interface HealingRecommendationRepository extends JpaRepository<HealingRecommendationEntity, String> {
+public interface HealingRecommendationRepository extends JpaRepository<HealingRecommendation, String> {
 
     @Modifying
-    @Query("update HealingRecommendationEntity h set h.status = :to, h.version = h.version + 1 "
+    @Query("update HealingRecommendation h set h.status = :to, h.version = h.version + 1 "
             + "where h.recommendationId = :id and h.status = :from")
     int transitionStatus(@Param("id") String id,
                          @Param("from") RecommendationStatus from,

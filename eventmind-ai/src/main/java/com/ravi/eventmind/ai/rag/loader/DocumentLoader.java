@@ -1,6 +1,5 @@
 package com.ravi.eventmind.ai.rag.loader;
 
-import com.ravi.eventmind.ai.knowledge.entity.DocumentEntity;
 import com.ravi.eventmind.ai.knowledge.repository.DocumentRepository;
 import com.ravi.eventmind.ai.logging.LogEntry;
 import com.ravi.eventmind.ai.logging.LogProvider;
@@ -37,7 +36,7 @@ public class DocumentLoader implements IDocumentLoader {
         return documents;
     }
 
-    private Document toDocument(DocumentEntity entity) {
+    private Document toDocument(com.ravi.eventmind.ai.knowledge.entity.Document entity) {
 
         return new Document(
                 entity.getContent(),

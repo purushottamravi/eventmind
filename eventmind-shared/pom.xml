@@ -46,6 +46,27 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
+        <!-- Spring AOP (the shared AuditAspect around @AuditLog methods; flows
+             transitively into every module that depends on shared). Logging stays
+             out - each module brings its own log4j2 stack. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- slf4j API (version managed by the parent BOM) for the shared audit
+             aspect; the concrete binding is supplied by each module's logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
         <!-- Jackson databind (JSON schema validation) -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

@@ -13,8 +13,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${DB_DDL_AUTO:update}
+      ddl-auto: ${DB_DDL_AUTO:validate}
     open-in-view: false
+
+  flyway:
+    enabled: true
 
   ai:
     ollama:
@@ -22,6 +25,16 @@ spring:
       chat:
         options:
           model: llama3.1
+      embedding:
+        options:
+          model: ${OLLAMA_EMBEDDING_MODEL:nomic-embed-text}
+    vectorstore:
+      pgvector:
+        # The vector_store table is created by Spring AI on startup; the pgvector
+        # extension is enabled by the compose init script and Flyway migration.
+        initialize-schema: true
+        # Must match the embedding model's output size (nomic-embed-text = 768).
+        dimensions: ${VECTOR_DIMENSIONS:768}
 
 eventmind:
   observability:

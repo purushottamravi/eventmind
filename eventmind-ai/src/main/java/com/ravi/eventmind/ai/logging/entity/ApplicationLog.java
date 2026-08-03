@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +20,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "AI_APPLICATION_LOG")
-public class ApplicationLogEntity {
+public class ApplicationLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +30,12 @@ public class ApplicationLogEntity {
 
     private String level;
 
-    @Column(columnDefinition = "CLOB")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(columnDefinition = "text")
     private String message;
 
-    @Column(columnDefinition = "CLOB")
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
+    @Column(columnDefinition = "text")
     private String exception;
 
     @Column(name = "CORRELATION_ID", length = 64)

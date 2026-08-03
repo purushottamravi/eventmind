@@ -63,7 +63,8 @@ public class HealingRecommendationService {
     public HealingRecommendation analyze(AnalyzeRequest request) {
         String symptom = request.symptom();
         if (symptom == null || symptom.isBlank()) {
-            throw new IllegalArgumentException("symptom is required for analysis");
+            throw new EventMindExceptions(EventMindReasonsEnum.SYMPTOM_INVALID,
+                    "symptom is required for analysis");
         }
 
         String knowledge = ragRetrievalService.search(symptom, topK(request))

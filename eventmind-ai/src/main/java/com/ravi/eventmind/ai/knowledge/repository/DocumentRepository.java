@@ -1,6 +1,6 @@
 package com.ravi.eventmind.ai.knowledge.repository;
 
-import com.ravi.eventmind.ai.knowledge.entity.DocumentEntity;
+import com.ravi.eventmind.ai.knowledge.entity.Document;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
  * No custom queries here, just the boilerplate CRUD.
  */
 @Repository
-public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> {
+public interface DocumentRepository extends JpaRepository<Document, Long> {
 }
