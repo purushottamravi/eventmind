@@ -129,7 +129,7 @@ class SymptomCommandControllerTest {
     }
 
     @Test
-    void addSymptoms_shouldConvertGatewayFailureToProblemDetail() throws Exception {
+    void addSymptoms_shouldNotLeakInternalFailureDetail() throws Exception {
         when(commandGateway.sendAndWait(any())).thenThrow(new IllegalStateException("command failed"));
 
         mockMvc.perform(post("/symptoms")
@@ -143,7 +143,7 @@ class SymptomCommandControllerTest {
                                   """))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorCode").value("C008"))
-                .andExpect(jsonPath("$.detail").value("command failed"));
+                .andExpect(jsonPath("$.detail").value("An unexpected internal error occurred"));
     }
 
     @Test

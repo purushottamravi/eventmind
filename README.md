@@ -236,7 +236,7 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 | Data           | JPA / Hibernate; H2 (query/observability); Postgres + pgvector (AI); Flyway migrations |
 | Validation     | Jackson + JSON-Schema validation (`JsonSchemaValidator`, RFC 7807 `ProblemDetail` errors)   |
 | Observability  | Java Flight Recorder (GC, CPU load, exceptions, custom `MethodExecutionEvent`), `@AuditLog` AOP aspect, correlation IDs in MDC |
-| Build          | Maven multi-module reactor, Maven Wrapper, `maven-dependency-plugin:analyze` hygiene gate    |
+| Build          | Maven multi-module reactor, Maven Wrapper, `maven-dependency-plugin:analyze` hygiene gate, Docker (multi-stage `Dockerfile` + `docker compose`) |
 
 ## Prerequisites
 
@@ -245,26 +245,31 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 - Ollama with a model configured (default `llama3.1`) — the LLM call degrades gracefully
   to a default recommendation when unavailable
 - Postgres (default `localhost:5432/eventmind`)
-- A `.env` file at the repository root holding the local connection secrets (git-ignored).
-  Required variables:
+- A `.env` file at the repository root holding the local connection settings (git-ignored).
+  Every variable is optional — each module carries safe defaults in its
+  `application.yml` — so the file only overrides defaults:
 
   ```properties
   DB_URL=jdbc:postgresql://localhost:5432/eventmind
-  DB_USERNAME=
-  DB_PASSWORD=
-  QUERY_DB_PASSWORD=
-  OBSERVABILITY_DB_PASSWORD=
-```
+  DB_USERNAME=postgres
+  DB_PASSWORD=postgres
+  QUERY_DB_PASSWORD=postgres
+  OBSERVABILITY_DB_PASSWORD=postgres
+  ```
 
   Each module loads it automatically via
-  `spring.config.import=optional:file:../.env[.properties]`, so the file must be
-  resolvable as `../.env` relative to the module directory (the default working
-  directory for both `spring-boot:run` and IDE run configurations).
+  `spring.config.import=optional:file:./.env[.properties],optional:file:../.env[.properties]`.
+  Both locations are optional and resolve against the working directory: `./.env`
+  covers running a fat jar from the repository root (or inside a container), and
+  `../.env` covers `spring-boot:run`/IDE runs whose working directory is the module
+  folder. Without the file — or without any particular variable — the module still
+  starts on its defaults.
 
 ## Getting Started
 
-1. Create the `.env` file at the repository root (see [Prerequisites](#prerequisites)) with
-   the local database passwords. It is git-ignored, so it is never committed.
+1. (Optional) Create a root `.env` file to override the defaults (see
+   [Prerequisites](#prerequisites)). It is git-ignored, so it is never committed;
+   without it every module runs on its built-in defaults.
 
 2. Start the infrastructure (Axon Server, Postgres + pgvector, Ollama):
 
@@ -288,13 +293,38 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
    `eventmind-command`, `eventmind-query`, `eventmind-ai`, and optionally
    `eventmind-observability`.
 
+## Containerized Run (Docker)
+
+The root `Dockerfile` is one parametrized, multi-stage build: it compiles a single
+module (the `MODULE` build arg) and keeps only the executable Spring Boot fat jar,
+then runs it on a plain JRE. `docker-compose.yml` builds all four apps from it and
+wires them to the infrastructure containers, so the whole system — command, query,
+observability, ai, plus Axon Server, Postgres + pgvector, and Ollama — comes up with
+one command:
+
+```bash
+docker compose up -d --build
+```
+
+Each app container receives its entire config from environment variables set in
+`docker-compose.yml` (the service hostnames `axonserver`, `postgres`, `ollama` take
+over the inter-module URLs), so no `.env` file is needed at runtime. The H2 file
+databases used by `query`/`observability` persist on the shared `app-data` volume
+(`/root/data`). The published ports match the local run: command `8081`, query
+`8082`, observability `8083`, ai `8080`.
+
+Stop just the apps (keeping infrastructure up) with `docker compose stop command
+query observability ai`; tear everything down, volumes included, with
+`docker compose down -v`.
+
 ## Running the Demo
 
 A minimal end-to-end run needs Axon Server (the shared event bus) plus the four modules.
 `docker compose up -d` provides Axon Server, Postgres + pgvector, and Ollama; Postgres and
-Ollama are used only by the AI analysis steps.
-Make sure the root `.env` file exists first (see [Prerequisites](#prerequisites)); without it
-the modules will not start.
+Ollama are used only by the AI analysis steps. The root `.env` file is optional (see
+[Prerequisites](#prerequisites)); every module starts on its built-in defaults without it.
+To run the modules in containers instead of the terminals below, use
+`docker compose up -d --build` (see [Containerized Run](#containerized-run-docker)).
 
 1. **Start the infrastructure** (Docker):
 
@@ -469,11 +499,10 @@ Each AI pipeline step degrades independently:
 ## Known Notes
 
 - `eventmind-ai` requires Postgres; command/query/observability use H2 file DBs.
-- `docker-compose.yml` runs Axon Server only. The old single-module `dockerfile`
-  was removed: it referenced a non-existent `eventmind-application` module and
-  cannot represent this multi-app system (command/query/ai/observability each run
-  as their own process on their own port). Run each module with
-  `.\mvnw.cmd -o spring-boot:run -pl <module>` instead.
+- `docker-compose.yml` runs the full system: infrastructure (Axon Server, Postgres +
+  pgvector, Ollama) and the four apps built from the shared root `Dockerfile`. For
+  local, non-Docker development each module still runs standalone with
+  `.\mvnw.cmd -o spring-boot:run -pl <module>`.
 - Dependency hygiene is enforced centrally: Axon/Guava versions live in the parent
   BOM only, and `maven-dependency-plugin:analyze` fails the build on unused or
   undeclared dependencies (`clean test`).

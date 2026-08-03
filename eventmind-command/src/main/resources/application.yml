@@ -3,7 +3,10 @@ spring:
     name: eventmind-command
 
   config:
-    import: optional:file:../.env[.properties]
+    # .env is optional everywhere: ./<CWD>/.env covers a fat jar run from the repo
+    # root and containers; ../.env covers spring-boot:run from the module dir. Every
+    # placeholder below also has a default, so the app starts without any .env at all.
+    import: optional:file:./.env[.properties],optional:file:../.env[.properties]
 
 server:
   port: 8081

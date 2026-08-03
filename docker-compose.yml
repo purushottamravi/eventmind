@@ -48,8 +48,92 @@ services:
       - axonserver-data:/axonserver/data
       - axonserver-events:/axonserver/events
 
+  # ---- Application services (built from the root Dockerfile) ----
+  # Each fat jar takes its whole config from environment variables set here, so a
+  # .env file is never needed at runtime. Values fall back to the same defaults the
+  # modules carry in their application.yml.
+  command:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: eventmind-command
+    container_name: eventmind-command
+    restart: unless-stopped
+    depends_on:
+      axonserver:
+        condition: service_started
+    environment:
+      AXON_AXONSERVER_SERVERS: axonserver:8124
+    ports:
+      - "8081:8081"
+
+  query:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: eventmind-query
+    container_name: eventmind-query
+    restart: unless-stopped
+    depends_on:
+      axonserver:
+        condition: service_started
+    environment:
+      AXON_AXONSERVER_SERVERS: axonserver:8124
+      QUERY_DB_PASSWORD: ${QUERY_DB_PASSWORD:-postgres}
+    volumes:
+      # Shared H2 file DBs (~/data/queryDB) so the read model survives restarts.
+      - app-data:/root/data
+    ports:
+      - "8082:8082"
+
+  observability:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: eventmind-observability
+    container_name: eventmind-observability
+    restart: unless-stopped
+    depends_on:
+      axonserver:
+        condition: service_started
+    environment:
+      AXON_AXONSERVER_SERVERS: axonserver:8124
+      OBSERVABILITY_DB_PASSWORD: ${OBSERVABILITY_DB_PASSWORD:-postgres}
+      EVENTMIND_AI_BASE_URL: http://ai:8080
+    volumes:
+      # Shared H2 file DBs (~/data/symptomDB) so the audit log survives restarts.
+      - app-data:/root/data
+    ports:
+      - "8083:8083"
+
+  ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: eventmind-ai
+    container_name: eventmind-ai
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/eventmind
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      OLLAMA_BASE_URL: http://ollama:11434
+      EVENTMIND_OBSERVABILITY_BASE_URL: http://observability:8083
+    ports:
+      - "8080:8080"
+
 volumes:
   postgres-data:
   ollama-models:
   axonserver-data:
   axonserver-events:
+  app-data:

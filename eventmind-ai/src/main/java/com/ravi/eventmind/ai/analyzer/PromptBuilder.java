@@ -86,19 +86,28 @@ public class PromptBuilder {
 
         RESPONSE FORMAT:
 
-        Return JSON only.
+        Return a single JSON object only. No markdown code fences,
+        no commentary, no trailing text.
 
         {
           "problem": "",
           "severity": "",
           "rootCause": "",
           "evidence": [
-             ""
+            {
+              "source": "",
+              "finding": "",
+              "severity": ""
+            }
           ],
-          "recommendedAction": "",
+          "suggestedAction": "",
           "confidence": 0,
           "requiresHumanApproval": true
         }
+
+        suggestedAction MUST be a concrete, non-empty action string
+        (for example "Clear the application cache" or "Restart the
+        affected service"). Never leave it empty.
 
         """
                 .formatted(

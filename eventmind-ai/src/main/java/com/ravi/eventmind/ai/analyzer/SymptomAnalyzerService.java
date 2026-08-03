@@ -3,6 +3,8 @@ package com.ravi.eventmind.ai.analyzer;
 
 import com.ravi.eventmind.ai.model.DiagnosticContext;
 import com.ravi.eventmind.ai.model.HealingRecommendation;
+import com.ravi.eventmind.shared.exceptions.EventMindExceptions;
+import com.ravi.eventmind.shared.exceptions.EventMindReasonsEnum;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +29,15 @@ public class SymptomAnalyzerService {
 
     public HealingRecommendation analyze(DiagnosticContext context, String knowledgeContext) {
         String prompt = promptBuilder.build(context, knowledgeContext);
-        return chatClient.prompt()
+        HealingRecommendation recommendation = chatClient.prompt()
                 .user(prompt)
                 .call()
                 .entity(HealingRecommendation.class);
+        if (recommendation == null || recommendation.suggestedAction() == null
+                || recommendation.suggestedAction().isBlank()) {
+            throw new EventMindExceptions(EventMindReasonsEnum.EXECUTION_FAILED,
+                    "LLM response is missing a suggestedAction; refusing to persist a broken recommendation");
+        }
+        return recommendation;
     }
 }

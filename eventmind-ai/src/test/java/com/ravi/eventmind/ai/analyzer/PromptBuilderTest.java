@@ -35,4 +35,14 @@ class PromptBuilderTest {
 
         assertTrue(prompt.contains("OOM"));
     }
+
+    @Test
+    void build_shouldUseFieldNamesTheDeserializerActuallyReads() {
+        String prompt = promptBuilder.build(new DiagnosticContext("OOM", "logs", "jfr"));
+
+        assertTrue(prompt.contains("\"suggestedAction\""));
+        assertTrue(prompt.contains("\"source\""));
+        assertTrue(prompt.contains("\"finding\""));
+        assertTrue(!prompt.contains("recommendedAction"));
+    }
 }

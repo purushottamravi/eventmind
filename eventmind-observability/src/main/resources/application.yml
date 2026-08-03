@@ -6,13 +6,16 @@ spring:
     active: dev
 
   config:
-    import: optional:file:../.env[.properties]
+    # .env is optional everywhere: ./<CWD>/.env covers a fat jar run from the repo
+    # root and containers; ../.env covers spring-boot:run from the module dir. Every
+    # placeholder below also has a default, so the app starts without any .env at all.
+    import: optional:file:./.env[.properties],optional:file:../.env[.properties]
 
   datasource:
     url: jdbc:h2:file:~/data/symptomDB
     driver-class-name: org.h2.Driver
     username: sa
-    password: ${OBSERVABILITY_DB_PASSWORD}
+    password: ${OBSERVABILITY_DB_PASSWORD:postgres}
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect

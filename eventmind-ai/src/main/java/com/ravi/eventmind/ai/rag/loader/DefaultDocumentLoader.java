@@ -1,0 +1,68 @@
+package com.ravi.eventmind.ai.rag.loader;
+
+import com.ravi.eventmind.ai.logging.model.LogEntry;
+import com.ravi.eventmind.ai.logging.port.LogProvider;
+import com.ravi.eventmind.ai.rag.entity.KnowledgeDocument;
+import com.ravi.eventmind.ai.rag.repository.DocumentRepository;
+import org.springframework.ai.document.Document;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Gathers everything we want searchable: knowledge docs from the DB and recent logs.
+ * Turns them into Spring AI documents with a bit of metadata each.
+ */
+@Component
+public class DefaultDocumentLoader implements DocumentLoader {
+
+    private static final int LOG_FETCH_LIMIT = 200;
+
+    private final DocumentRepository repository;
+    private final LogProvider logProvider;
+
+    public DefaultDocumentLoader(DocumentRepository repository, LogProvider logProvider) {
+        this.repository = repository;
+        this.logProvider = logProvider;
+    }
+
+    @Override
+    public List<Document> load() {
+        List<Document> documents = new ArrayList<>();
+        repository.findAll().stream().map(this::toDocument).forEach(documents::add);
+        logProvider.recentLogs(LOG_FETCH_LIMIT).stream().map(this::logToDocument).forEach(documents::add);
+        return documents;
+    }
+
+    private Document toDocument(KnowledgeDocument entity) {
+
+        return new Document(
+                entity.getContent(),
+                Map.of(
+                        "Id", entity.getId(),
+                        "source", entity.getSource(),
+                        "type", entity.getType()
+                )
+        );
+    }
+
+    private Document logToDocument(LogEntry log) {
+        StringBuilder content = new StringBuilder()
+                .append('[').append(log.level()).append("] ")
+                .append(log.message());
+        if (log.exception() != null && !log.exception().isBlank()) {
+            content.append("\nException: ").append(log.exception());
+        }
+
+        return new Document(
+                content.toString(),
+                Map.of(
+                        "Id", String.valueOf(log.id()),
+                        "source", "application-log",
+                        "type", log.level()
+                )
+        );
+    }
+}

@@ -1,0 +1,15 @@
+.git
+.gitignore
+target
+**/target
+data
+.env
+*.jfr
+*.log
+*.mv.db
+*.db
+*.hprof
+.idea
+*.iml
+.vscode
+hs_err_pid*.log
