@@ -97,6 +97,7 @@ The pipeline is fully wired across modules:
 - **Recommendation execution**: recommendations require human approval and are executed
   through a pluggable `HealingExecutor`.
 
+
 ### End-to-End Sequence
 
 ```mermaid

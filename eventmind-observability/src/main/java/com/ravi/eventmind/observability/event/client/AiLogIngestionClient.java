@@ -16,6 +16,7 @@ import java.util.Map;
  * {@code POST /logs} endpoint. Pushes run on their own async thread pool so a slow
  * AI service never stalls the event processor, and the correlation ID travels along
  * as an {@code X-Correlation-Id} header (and into the MDC) to keep the trace intact.
+ *
  */
 @Slf4j
 @Component
