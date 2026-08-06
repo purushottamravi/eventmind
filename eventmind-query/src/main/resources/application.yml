@@ -39,10 +39,21 @@ axon:
   serializer:
     general: jackson
     events: jackson
-  event-handling:
-    processors:
-      symptom:
-        mode: tracking
+  kafka:
+    bootstrap-servers: ${AXON_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    client-id: eventmind-query
+    default-topic: eventmind.events
+    # Consumer only: the "symptom" tracking processor is wired to the
+    # StreamableKafkaMessageSource in KafkaEventProcessingConfig. The publisher side
+    # is disabled so consumed events are never echoed back onto the topic.
+    publisher:
+      enabled: false
+    consumer:
+      event-processor-mode: tracking
+      enable-auto-commit: false
+    fetcher:
+      enabled: true
+      poll-timeout: 5000
 
 logging:
   level:

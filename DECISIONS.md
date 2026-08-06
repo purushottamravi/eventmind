@@ -105,7 +105,8 @@ EventMind requires domain-oriented concepts such as:
 
 Axon provides these concepts directly.
 
-Kafka could later be introduced for external integration events.
+Kafka was later introduced for event distribution between services; Axon Framework
+remains the event-sourcing and command-handling backbone (see ADR-012).
 
 ---
 
@@ -378,6 +379,47 @@ Benefits include:
 
 ---
 
+# ADR-012: Why Kafka for Event Distribution?
+
+## Context
+
+EventMind distributes domain events between services. Originally Axon Server carried the
+event stream (ADR-003). As the platform grows, a durable, independently-consumable event
+transport decouples the command side from its read models.
+
+## Decision
+
+EventMind introduces Apache Kafka through the Axon Kafka extension
+(`axon-kafka-spring-boot-starter` 4.11).
+
+- `eventmind-command` publishes every domain event (today `SymptomCreatedEvent`) to the
+  shared `eventmind.events` topic via the auto-configured `KafkaEventPublisher`
+  (subscribing event processor). Axon Server stays the event store and command bus.
+- `eventmind-query` and `eventmind-observability` consume from the same topic: their
+  tracking event processors (`symptom`, `observability`) are registered against a
+  `StreamableKafkaMessageSource` instead of Axon Server's event stream. Their tokens stay
+  in the local `TOKEN_ENTRY` store, so each read model tracks its own offset.
+- Kafka is a transport for the event stream, not an event store. Event sourcing still
+  runs through Axon Server.
+
+## Consequences
+
+### Advantages
+
+- Decoupled, durable event transport between services
+- Independent consumers: each tracking processor keeps its own position in the topic
+- Same-topic ordering preserved by the `StreamableKafkaMessageSource`, while Axon keeps
+  full control of command handling and event sourcing
+
+### Trade-offs
+
+- Extra infrastructure (a Kafka broker) and configuration (`axon.kafka.*`)
+- At-least-once publication: consumers must tolerate duplicates, which the read models
+  already do (aggregate idempotency, keyed writes)
+- One more moving part in the platform
+
+---
+
 # Future Architectural Evolution
 
 Potential future enhancements include:
@@ -386,7 +428,6 @@ Potential future enhancements include:
 - Prometheus metrics
 - Grafana dashboards
 - Kubernetes deployment
-- Kafka integration
 - Multi-agent AI workflows
 - Policy-driven healing engine
 - Distributed tracing

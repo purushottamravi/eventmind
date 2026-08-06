@@ -48,6 +48,39 @@ services:
       - axonserver-data:/axonserver/data
       - axonserver-events:/axonserver/events
 
+  kafka:
+    image: confluentinc/cp-kafka:7.7.1
+    container_name: eventmind-kafka
+    hostname: kafka
+    restart: unless-stopped
+    environment:
+      # Single-node KRaft (no ZooKeeper). The cluster id is just a stable UUID.
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      # Advertise both names: other containers reach the broker as "kafka:9092",
+      # a dev host process reaches it as "localhost:9092".
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # eventmind.events is created on first publish (single-broker cluster)
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
   # ---- Application services (built from the root Dockerfile) ----
   # Each fat jar takes its whole config from environment variables set here, so a
   # .env file is never needed at runtime. Values fall back to the same defaults the
@@ -63,8 +96,11 @@ services:
     depends_on:
       axonserver:
         condition: service_started
+      kafka:
+        condition: service_healthy
     environment:
       AXON_AXONSERVER_SERVERS: axonserver:8124
+      AXON_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8081:8081"
 
@@ -79,8 +115,11 @@ services:
     depends_on:
       axonserver:
         condition: service_started
+      kafka:
+        condition: service_healthy
     environment:
       AXON_AXONSERVER_SERVERS: axonserver:8124
+      AXON_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       QUERY_DB_PASSWORD: ${QUERY_DB_PASSWORD:-postgres}
     volumes:
       # Shared H2 file DBs (~/data/queryDB) so the read model survives restarts.
@@ -99,8 +138,11 @@ services:
     depends_on:
       axonserver:
         condition: service_started
+      kafka:
+        condition: service_healthy
     environment:
       AXON_AXONSERVER_SERVERS: axonserver:8124
+      AXON_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       OBSERVABILITY_DB_PASSWORD: ${OBSERVABILITY_DB_PASSWORD:-postgres}
       EVENTMIND_AI_BASE_URL: http://ai:8080
     volumes:

@@ -51,6 +51,7 @@
 		<java.version>21</java.version>
 		<spring-ai.version>1.0.0</spring-ai.version>
 		<axon.version>4.11.1</axon.version>
+		<axon-kafka.version>4.11.1</axon-kafka.version>
 		<guava.version>33.4.8-jre</guava.version>
 	</properties>
 
@@ -86,6 +87,14 @@
 				<groupId>org.axonframework</groupId>
 				<artifactId>axon-messaging</artifactId>
 				<version>${axon.version}</version>
+			</dependency>
+
+			<!-- Axon Kafka extension (distributes domain events between modules via Kafka
+			     topics; Axon Server stays the event store + command bus) -->
+			<dependency>
+				<groupId>org.axonframework.extensions.kafka</groupId>
+				<artifactId>axon-kafka-spring-boot-starter</artifactId>
+				<version>${axon-kafka.version}</version>
 			</dependency>
 
 			<!-- Guava (transitive via Axon; pinned once for all modules) -->
@@ -162,6 +171,7 @@
 								<!-- Referenced only via the AOP pointcut string in AuditAspect. -->
 								<artifact>com.ravi:eventmind-shared</artifact>
 								<artifact>org.axonframework:axon-spring-boot-starter</artifact>
+								<artifact>org.axonframework.extensions.kafka:axon-kafka-spring-boot-starter</artifact>
 								<artifact>org.springframework.ai:spring-ai-starter-model-ollama</artifact>
 								<artifact>org.springframework.ai:spring-ai-starter-vector-store-pgvector</artifact>
 								<!-- Runtime/provided plumbing wired by Spring Boot auto-configuration. -->

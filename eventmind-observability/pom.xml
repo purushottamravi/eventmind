@@ -17,11 +17,18 @@
             <artifactId>eventmind-shared</artifactId>
         </dependency>
 
-        <!-- Axon (event handling: consume domain events published by the command side) -->
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-spring-boot-starter</artifactId>
-        </dependency>
+		<!-- Axon (event handling: consume domain events published by the command side) -->
+		<dependency>
+			<groupId>org.axonframework</groupId>
+			<artifactId>axon-spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- Axon Kafka extension: consume domain events from the shared Kafka topic
+		     instead of reading them from Axon Server's event stream -->
+		<dependency>
+			<groupId>org.axonframework.extensions.kafka</groupId>
+			<artifactId>axon-kafka-spring-boot-starter</artifactId>
+		</dependency>
 
         <!-- Spring Web -->
         <dependency>

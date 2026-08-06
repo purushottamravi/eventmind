@@ -35,7 +35,8 @@ flowchart LR
         AGG["SymptomAggregate"]
     end
 
-    AX["Axon Server :8024/8124"]
+    AX["Axon Server :8024/8124 (event store)"]
+    K["Kafka :9092 (event stream)"]
 
     subgraph QU["eventmind-query :8082"]
         QH["SymptomEventsHandler"]
@@ -62,8 +63,9 @@ flowchart LR
     REST --> CMD
     CMD --> AGG
     AGG -- "SymptomCreatedEvent" --> AX
-    AX --> QH
-    AX --> OH
+    AGG -- "SymptomCreatedEvent" --> K
+    K --> QH
+    K --> OH
     QH --> QM
     QM --> QGET
     OH --> ALOG
@@ -81,9 +83,11 @@ The pipeline is fully wired across modules:
 
 - **REST → CQRS**: `POST /symptoms` dispatches a `CreateSymptomCommand` via Axon.
 - **Events → Observability**: `SymptomCreatedEvent` is consumed by the observability
-  module through the Axon event stream (`SymptomEventLogHandler`, tracking processor
+  module through the Kafka event stream (`SymptomEventLogHandler`, tracking processor
   `observability`) and recorded into `APPLICATION_LOG`. Observability never reaches into
-  the command module; it only reacts to published domain events.
+  the command module; it only reacts to published domain events. Axon Server stays the
+  event store and command bus; Kafka carries the distributed event stream between the
+  command side and the query/observability read models.
 - **Observability → AI (port ownership)**: the AI module never reads the observability
   database directly. It owns its own `AI_APPLICATION_LOG` store and ingests log entries
   through `POST /logs` (AI-side). The observability module is the producer: after
@@ -106,6 +110,7 @@ sequenceDiagram
     participant Client
     participant CMD as command-8081
     participant AX as Axon-Server
+    participant KAFKA as Kafka
     participant QRY as query-8082
     participant OBS as observability-8083
     participant AI as ai-8080
@@ -115,8 +120,9 @@ sequenceDiagram
     CMD->>AX: CreateSymptomCommand
     AX-->>CMD: accepted
     CMD-->>Client: Created Symptom with Id : ...
-    AX-->>QRY: SymptomCreatedEvent
-    AX-->>OBS: SymptomCreatedEvent
+    CMD->>KAFKA: SymptomCreatedEvent
+    KAFKA-->>QRY: SymptomCreatedEvent
+    KAFKA-->>OBS: SymptomCreatedEvent
     OBS->>AI: POST /logs (async, best-effort)
 
     Client->>QRY: GET /symptoms
@@ -189,8 +195,8 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
   create, origin validation), `eventmind-query` owns the paginated read model, and the event
   stream is a replayable audit trail.
 - **Distributed event flow**: a `CreateSymptomCommand` produces a `SymptomCreatedEvent` that
-  Axon Server fans out to the query read model and the observability log handler — one write,
-  many projections.
+  Kafka streams to the query read model and the observability log handler, while Axon Server
+  stores the event stream — one write, many projections.
 - **Port ownership between modules**: observability owns `APPLICATION_LOG`; the AI module owns
   its own `AI_APPLICATION_LOG` and never reads another module's database. Observability pushes
   entries via `POST /logs` (`LogIngestionClient`, asynchronous, best-effort, failure-isolated).
@@ -230,7 +236,8 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 |----------------|---------------------------------------------------------------------------------------------|
 | Language       | Java 21 (records, pattern matching, JDK 21 `RecordingStream` for live JFR)                   |
 | Framework      | Spring Boot 3.5.4, Spring Web, Spring Data JPA                                              |
-| Messaging / DDD| Axon Framework 4.11 (command/event/query gateways, aggregates, event sourcing), Axon Server 2024.2.2 |
+| Messaging / DDD| Axon Framework 4.11 (command/event/query gateways, aggregates, event sourcing), Axon Kafka extension 4.11 (Kafka event distribution), Axon Server 2024.2.2 (event store) |
+| Streaming    | Apache Kafka (single-node KRaft via Docker; topic `eventmind.events`)                    |
 | AI             | Spring AI 1.0.0 (`spring-ai-starter-model-ollama`, `spring-ai-starter-vector-store-pgvector`)|
 | LLM            | Ollama (`llama3.1`, default base-url `http://localhost:11434`)                              |
 | Data           | JPA / Hibernate; H2 (query/observability); Postgres + pgvector (AI); Flyway migrations |
@@ -241,7 +248,7 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
 ## Prerequisites
 
 - JDK 21
-- Docker — `docker compose` provides Axon Server, Postgres + pgvector, and Ollama
+- Docker — `docker compose` provides Axon Server, Kafka, Postgres + pgvector, and Ollama
 - Ollama with a model configured (default `llama3.1`) — the LLM call degrades gracefully
   to a default recommendation when unavailable
 - Postgres (default `localhost:5432/eventmind`)
@@ -271,13 +278,14 @@ gets an HTTP 409. Automation where it is safe, a human gate where it is not.
    [Prerequisites](#prerequisites)). It is git-ignored, so it is never committed;
    without it every module runs on its built-in defaults.
 
-2. Start the infrastructure (Axon Server, Postgres + pgvector, Ollama):
+2. Start the infrastructure (Axon Server, Kafka, Postgres + pgvector, Ollama):
 
    ```bash
    docker compose up -d
    ```
 
    Axon Server UI: `http://localhost:8024` (gRPC on `8124`).
+   Kafka: `localhost:9092` (plaintext).
    Postgres: `localhost:5432/eventmind` (user `postgres`, password from `DB_PASSWORD`).
    Ollama: `localhost:11434` (pull the default model once with
    `docker compose exec ollama ollama pull llama3.1`).
@@ -299,8 +307,8 @@ The root `Dockerfile` is one parametrized, multi-stage build: it compiles a sing
 module (the `MODULE` build arg) and keeps only the executable Spring Boot fat jar,
 then runs it on a plain JRE. `docker-compose.yml` builds all four apps from it and
 wires them to the infrastructure containers, so the whole system — command, query,
-observability, ai, plus Axon Server, Postgres + pgvector, and Ollama — comes up with
-one command:
+observability, ai, plus Axon Server, Kafka, Postgres + pgvector, and Ollama — comes up
+with one command:
 
 ```bash
 docker compose up -d --build
@@ -319,8 +327,8 @@ query observability ai`; tear everything down, volumes included, with
 
 ## Running the Demo
 
-A minimal end-to-end run needs Axon Server (the shared event bus) plus the four modules.
-`docker compose up -d` provides Axon Server, Postgres + pgvector, and Ollama; Postgres and
+A minimal end-to-end run needs Axon Server + Kafka (shared event store and event stream) plus the four modules.
+`docker compose up -d` provides Axon Server, Kafka, Postgres + pgvector, and Ollama; Postgres and
 Ollama are used only by the AI analysis steps. The root `.env` file is optional (see
 [Prerequisites](#prerequisites)); every module starts on its built-in defaults without it.
 To run the modules in containers instead of the terminals below, use
@@ -333,6 +341,7 @@ To run the modules in containers instead of the terminals below, use
    ```
 
    Axon Server UI: `http://localhost:8024` (gRPC on `8124`).
+   Kafka: `localhost:9092`.
 
 2. **Build and test** (offline, using the local `.m2` cache):
 
@@ -351,7 +360,7 @@ To run the modules in containers instead of the terminals below, use
    ```
 
 4. **Create a symptom** (command side, port 8081) — the event is published through Axon Server
-   to the query and observability event handlers:
+   (event store) and streamed through Kafka to the query and observability event handlers:
 
    ```powershell
    Invoke-RestMethod -Uri "http://localhost:8081/symptoms" -Method Post -ContentType "application/json" `
@@ -499,7 +508,7 @@ Each AI pipeline step degrades independently:
 ## Known Notes
 
 - `eventmind-ai` requires Postgres; command/query/observability use H2 file DBs.
-- `docker-compose.yml` runs the full system: infrastructure (Axon Server, Postgres +
+- `docker-compose.yml` runs the full system: infrastructure (Axon Server, Kafka, Postgres +
   pgvector, Ollama) and the four apps built from the shared root `Dockerfile`. For
   local, non-Docker development each module still runs standalone with
   `.\mvnw.cmd -o spring-boot:run -pl <module>`.

@@ -20,3 +20,18 @@ axon:
   serializer:
     general: jackson
     events: jackson
+  kafka:
+    bootstrap-servers: ${AXON_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    client-id: eventmind-command
+    default-topic: eventmind.events
+    # Producer only: every event published on the local event bus (e.g.
+    # SymptomCreatedEvent) is forwarded to the shared topic by the auto-configured
+    # KafkaEventPublisher. The consumer side is disabled - the command module never
+    # reads events back from Kafka.
+    publisher:
+      enabled: true
+      processing-group: __axon-kafka-event-publishing-group
+    producer:
+      event-processor-mode: subscribing
+    fetcher:
+      enabled: false

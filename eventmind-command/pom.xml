@@ -42,11 +42,18 @@
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
-        <!-- Axon Framework (versions managed by the parent BOM) -->
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-spring-boot-starter</artifactId>
-        </dependency>
+		<!-- Axon Framework (versions managed by the parent BOM) -->
+		<dependency>
+			<groupId>org.axonframework</groupId>
+			<artifactId>axon-spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- Axon Kafka extension: forwards every locally published domain event to the
+		     shared Kafka topic (query/observability consume it there) -->
+		<dependency>
+			<groupId>org.axonframework.extensions.kafka</groupId>
+			<artifactId>axon-kafka-spring-boot-starter</artifactId>
+		</dependency>
 
         <!-- Lombok -->
         <dependency>
