@@ -20,10 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/symptoms")
 @Slf4j
-public class SymptomQueryContoller {
+public class SymptomQueryController {
     private final QueryGateway queryGateway;
 
-    public SymptomQueryContoller(QueryGateway queryGateway) {
+    public SymptomQueryController(QueryGateway queryGateway) {
         this.queryGateway = queryGateway;
     }
 

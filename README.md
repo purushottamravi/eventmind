@@ -4,6 +4,13 @@ An event-driven, self-healing system for Java applications. EventMind captures a
 symptoms through CQRS + Event Sourcing (Axon), observes runtime logs, and uses a RAG pipeline
 (Spring AI) to generate and execute healing recommendations under human approval.
 
+## Business Scenario
+
+Imagine an enterprise application running in production. Suddenly response times increase, error rates rise, or memory usage grows.
+Engineers need to analyze multiple sources of information such as application logs, runtime diagnostics, and metrics to understand the root cause.
+EventMind helps by collecting application symptoms, analyzing diagnostic evidence, and generating AI-assisted remediation recommendations. Any corrective action requires human approval before execution.
+The goal is not to replace engineers, but to help them make faster and better operational decisions.
+
 ## Problem Statement
 
 Production Java applications fail for reasons that are hard to pin down: an OOM, a GC

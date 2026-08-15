@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Proves the controller behaves itself: returns symptoms and handles empty results.
  */
 @ExtendWith(MockitoExtension.class)
-class SymptomQueryContollerTest {
+class SymptomQueryControllerTest {
 
     @Mock
     private QueryGateway queryGateway;
@@ -33,7 +33,7 @@ class SymptomQueryContollerTest {
 
     @BeforeEach
     void setUp() {
-        SymptomQueryContoller controller = new SymptomQueryContoller(queryGateway);
+        SymptomQueryController controller = new SymptomQueryController(queryGateway);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .build();
     }
