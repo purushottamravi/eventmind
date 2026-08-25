@@ -59,6 +59,9 @@ axon:
 eventmind:
   ai:
     base-url: ${EVENTMIND_AI_BASE_URL:http://localhost:8080}
+  observability:
+    jfr:
+      enabled: true # making it false forces Spring to completely skip loading the listener!
 
 logging:
   pattern:
