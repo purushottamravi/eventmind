@@ -16,7 +16,9 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${DB_DDL_AUTO:validate}
+      # update (not validate): Hibernate owns the module's entity tables
+      # (healing_recommendation, application_log, ...). Flyway owns the RAG/schema tables.
+      ddl-auto: ${DB_DDL_AUTO:update}
     open-in-view: false
 
   flyway:
@@ -38,6 +40,18 @@ spring:
         initialize-schema: true
         # Must match the embedding model's output size (nomic-embed-text = 768).
         dimensions: ${VECTOR_DIMENSIONS:768}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 eventmind:
   observability:

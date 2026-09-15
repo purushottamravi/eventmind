@@ -72,6 +72,13 @@
             <artifactId>flyway-core</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- Flyway 11 dropped PostgreSQL support from flyway-core; the
+             database-specific module is required to talk to Postgres/pgvector. -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Tests -->
         <dependency>
@@ -88,16 +95,6 @@
         <dependency>
             <groupId>com.ravi</groupId>
             <artifactId>eventmind-shared</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-messaging</artifactId>
-        </dependency>
-        <!-- Axon Boot auto-configuration: registers the CommandGateway bean that
-             AiCommandListener uses to dispatch recommendation commands. -->
-        <dependency>
-            <groupId>org.axonframework</groupId>
-            <artifactId>axon-spring-boot-starter</artifactId>
         </dependency>
 
     </dependencies>

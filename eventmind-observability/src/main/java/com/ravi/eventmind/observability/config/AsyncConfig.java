@@ -8,8 +8,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 /**
- * The async executor config for best-effort cross-service pushes (like shipping
- * log entries to the AI module) so they never block the Axon event processor.
+ * The async executor configs for best-effort cross-service pushes (shipping log
+ * entries and JFR diagnostic snapshots to the AI module) so they never block
+ * the Axon event processor.
  */
 @Configuration
 @EnableAsync
@@ -22,6 +23,17 @@ public class AsyncConfig {
         executor.setMaxPoolSize(4);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("log-ingestion-");
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(name = "aiAnalysisExecutor")
+    public Executor aiAnalysisExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(2);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("ai-analysis-");
         executor.initialize();
         return executor;
     }

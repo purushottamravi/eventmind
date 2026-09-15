@@ -11,7 +11,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
@@ -28,7 +27,7 @@ class SymptomAggregateTest {
                 id, "High memory usage", 7L, 4, "corr-1");
 
         try (MockedStatic<AggregateLifecycle> lifecycle = mockStatic(AggregateLifecycle.class)) {
-            new SymptomAggregate(command);
+            SymptomAggregate.create(command);
 
             ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
             lifecycle.verify(() -> AggregateLifecycle.apply(captor.capture()));
@@ -61,7 +60,7 @@ class SymptomAggregateTest {
         CreateSymptomCommand command = new CreateSymptomCommand(
                 UUID.randomUUID().toString(), "   ", 1L, 1, null);
 
-        assertThrows(EventMindExceptions.class, () -> new SymptomAggregate(command));
+        assertThrows(EventMindExceptions.class, () -> SymptomAggregate.create(command));
     }
 
     @Test
@@ -73,7 +72,7 @@ class SymptomAggregateTest {
                 1,
                 null);
 
-        assertThrows(EventMindExceptions.class, () -> new SymptomAggregate(command));
+        assertThrows(EventMindExceptions.class, () -> SymptomAggregate.create(command));
     }
 
     @Test
@@ -81,7 +80,7 @@ class SymptomAggregateTest {
         CreateSymptomCommand command = new CreateSymptomCommand(
                 UUID.randomUUID().toString(), "Headache", 0L, 1, null);
 
-        assertThrows(EventMindExceptions.class, () -> new SymptomAggregate(command));
+        assertThrows(EventMindExceptions.class, () -> SymptomAggregate.create(command));
     }
 
     @Test
@@ -89,7 +88,7 @@ class SymptomAggregateTest {
         CreateSymptomCommand command = new CreateSymptomCommand(
                 UUID.randomUUID().toString(), "Headache", 1L, 0, null);
 
-        assertThrows(EventMindExceptions.class, () -> new SymptomAggregate(command));
+        assertThrows(EventMindExceptions.class, () -> SymptomAggregate.create(command));
     }
 
     @Test
@@ -97,15 +96,6 @@ class SymptomAggregateTest {
         CreateSymptomCommand command = new CreateSymptomCommand(
                 "not-a-uuid", "Headache", 1L, 1, null);
 
-        assertThrows(EventMindExceptions.class, () -> new SymptomAggregate(command));
-    }
-
-    @Test
-    void whenDuplicateCreateCommand_shouldBeIdempotentNoOp() {
-        SymptomAggregate aggregate = new SymptomAggregate();
-        CreateSymptomCommand command = new CreateSymptomCommand(
-                UUID.randomUUID().toString(), "Headache", 1L, 1, null);
-
-        assertDoesNotThrow(() -> aggregate.handle(command));
+        assertThrows(EventMindExceptions.class, () -> SymptomAggregate.create(command));
     }
 }

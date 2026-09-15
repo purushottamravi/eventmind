@@ -30,12 +30,19 @@ spring:
 server:
   port: 8082
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 axon:
-  axonserver:
-    enabled: true
-    servers: ${AXON_AXONSERVER_SERVERS:localhost:8124}
-  distributed:
-    enabled: false
   serializer:
     general: jackson
     events: jackson

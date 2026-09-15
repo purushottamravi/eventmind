@@ -32,22 +32,6 @@ services:
     # Pull the chat model once so the AI module can analyse out of the box:
     #   docker compose exec ollama ollama pull llama3.1
 
-  axonserver:
-    image: axoniq/axonserver:2024.2.2
-    container_name: eventmind-axonserver
-    hostname: axonserver
-    restart: unless-stopped
-    environment:
-      - axoniq_axonserver_hostname=localhost
-      - axoniq_axonserver_internal_hostname=axonserver
-    ports:
-      - "8024:8024"
-      - "8124:8124"
-      - "8224:8224"
-    volumes:
-      - axonserver-data:/axonserver/data
-      - axonserver-events:/axonserver/events
-
   kafka:
     image: confluentinc/cp-kafka:7.7.1
     container_name: eventmind-kafka
@@ -59,13 +43,13 @@ services:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093
       # Advertise both names: other containers reach the broker as "kafka:9092",
-      # a dev host process reaches it as "localhost:9092".
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      # a dev host process reaches it as "localhost:9092" (host 9092 -> container 29092).
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
@@ -73,7 +57,9 @@ services:
       # eventmind.events is created on first publish (single-broker cluster)
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     ports:
-      - "9092:9092"
+      # Host 9092 maps to the container's EXTERNAL listener (29092); the INTERNAL
+      # (kafka:9092) listener is only reachable from the compose network.
+      - "9092:29092"
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
       interval: 10s
@@ -94,12 +80,9 @@ services:
     container_name: eventmind-command
     restart: unless-stopped
     depends_on:
-      axonserver:
-        condition: service_started
       kafka:
         condition: service_healthy
     environment:
-      AXON_AXONSERVER_SERVERS: axonserver:8124
       AXON_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8081:8081"
@@ -113,12 +96,9 @@ services:
     container_name: eventmind-query
     restart: unless-stopped
     depends_on:
-      axonserver:
-        condition: service_started
       kafka:
         condition: service_healthy
     environment:
-      AXON_AXONSERVER_SERVERS: axonserver:8124
       AXON_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       QUERY_DB_PASSWORD: ${QUERY_DB_PASSWORD:-postgres}
     volumes:
@@ -136,12 +116,9 @@ services:
     container_name: eventmind-observability
     restart: unless-stopped
     depends_on:
-      axonserver:
-        condition: service_started
       kafka:
         condition: service_healthy
     environment:
-      AXON_AXONSERVER_SERVERS: axonserver:8124
       AXON_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       OBSERVABILITY_DB_PASSWORD: ${OBSERVABILITY_DB_PASSWORD:-postgres}
       EVENTMIND_AI_BASE_URL: http://ai:8080
@@ -173,9 +150,38 @@ services:
     ports:
       - "8080:8080"
 
+  # ---- Monitoring stack ----
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: eventmind-prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: eventmind-grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
 volumes:
   postgres-data:
   ollama-models:
-  axonserver-data:
-  axonserver-events:
   app-data:
+  prometheus-data:
+  grafana-data:

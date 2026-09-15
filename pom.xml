@@ -97,12 +97,12 @@
 				<version>${axon-kafka.version}</version>
 			</dependency>
 
-			<!-- Guava (transitive via Axon; pinned once for all modules) -->
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
+<!-- Guava (transitive via Axon; pinned once for all modules) -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
 
 
 			<!-- Internal modules -->
@@ -114,6 +114,24 @@
 
 		</dependencies>
 	</dependencyManagement>
+
+
+	<!-- Shared application dependencies inherited by every module: monitoring and
+	     metrics support (Actuator + Micrometer Prometheus registry) so the app fat
+	     jars expose /actuator/prometheus for Prometheus scraping. -->
+	<dependencies>
+		<!-- Spring Boot Actuator (health, info, metrics) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Prometheus metrics exporter — exposes /actuator/prometheus -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+	</dependencies>
 
 
 	<build>
@@ -178,6 +196,9 @@
 								<artifact>com.h2database:h2</artifact>
 								<artifact>org.flywaydb:flyway-core</artifact>
 								<artifact>org.projectlombok:lombok</artifact>
+								<!-- Referenced only via Spring auto-configuration, never in application code. -->
+								<artifact>org.springframework.boot:spring-boot-starter-actuator</artifact>
+								<artifact>io.micrometer:micrometer-registry-prometheus</artifact>
 							</ignoredUnusedDeclaredDependencies>
 						</configuration>
 					</execution>

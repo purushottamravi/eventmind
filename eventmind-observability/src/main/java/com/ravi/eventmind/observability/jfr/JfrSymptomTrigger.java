@@ -1,40 +1,34 @@
 package com.ravi.eventmind.observability.jfr;
 
 import com.ravi.eventmind.shared.events.SymptomCreatedEvent;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
-import org.axonframework.commandhandling.gateway.CommandGateway;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+/**
+ * When a new symptom lands on the Kafka topic, extracts a JFR diagnostic
+ * snapshot and pushes it to the AI module for structured healing analysis.
+ */
 @Component
+@ProcessingGroup("observability")
 public class JfrSymptomTrigger {
 
     private final JfrAnalyzer jfrAnalyzer;
-    private final CommandGateway commandGateway; // Inject Axon's command gateway!
+    private final HealingAnalysisClient healingAnalysisClient;
 
-    public JfrSymptomTrigger(JfrAnalyzer jfrAnalyzer, CommandGateway commandGateway) {
+    public JfrSymptomTrigger(JfrAnalyzer jfrAnalyzer, HealingAnalysisClient healingAnalysisClient) {
         this.jfrAnalyzer = jfrAnalyzer;
-        this.commandGateway = commandGateway;
+        this.healingAnalysisClient = healingAnalysisClient;
     }
 
     @EventHandler
     public void on(SymptomCreatedEvent event) {
-        log.info("Symptom detected: {}. Extracting current JFR snapshot.", event.name());
-
-        // 1. Who calls whom: Trigger calls Analyzer, Analyzer reads JfrReport and clears it
         String diagnosticReportText = jfrAnalyzer.analyze();
 
-        log.info("JFR Analysis Report compiled successfully for symptom ID: {}", event.id());
-
-        // 2. The Final Chain Link: Dispatch the text report to your AI Command handler!
-        commandGateway.send(new AiAnalysisRequest(
+        healingAnalysisClient.analyze(new AiAnalyzeRequest(
                 event.id(),
                 event.name(),
                 diagnosticReportText
         ));
-
-        log.info("Dispatched AnalyzeSymptomWithAiCommand to the AI routing module.");
     }
 }
-

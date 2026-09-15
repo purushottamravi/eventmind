@@ -9,7 +9,10 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
+import org.axonframework.modelling.command.CreationPolicy;
 import org.axonframework.spring.stereotype.Aggregate;
+
+import static org.axonframework.modelling.command.AggregateCreationPolicy.ALWAYS;
 
 import java.util.UUID;
 
@@ -32,7 +35,8 @@ public class SymptomAggregate {
     }
 
     @CommandHandler
-    public SymptomAggregate(CreateSymptomCommand command) {
+    @CreationPolicy(ALWAYS)
+    public static SymptomAggregate create(CreateSymptomCommand command) {
         validateCreation(command);
         AggregateLifecycle.apply(new SymptomCreatedEvent(
                 command.id(),
@@ -40,12 +44,7 @@ public class SymptomAggregate {
                 command.origin(),
                 command.numberOfOccurance(),
                 command.correlationId()));
-    }
-
-    @CommandHandler
-    public void handle(CreateSymptomCommand command) {
-        log.info("Symptom {} already exists; ignoring duplicate create command (at-least-once delivery)",
-                command.id());
+        return new SymptomAggregate();
     }
 
     @EventSourcingHandler
@@ -56,7 +55,7 @@ public class SymptomAggregate {
         this.numberOfOccurance = event.numberOfOccurance();
     }
 
-    private void validateCreation(CreateSymptomCommand command) {
+    private static void validateCreation(CreateSymptomCommand command) {
         if (command.id() == null || command.id().isBlank()) {
             throw new EventMindExceptions(EventMindReasonsEnum.SYMPTOM_INVALID,
                     "Symptom id must not be blank");
