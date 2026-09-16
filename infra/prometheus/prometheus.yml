@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'eventmind-command'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['command:8081']
+
+  - job_name: 'eventmind-query'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['query:8082']
+
+  - job_name: 'eventmind-observability'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['observability:8083']
+
+  - job_name: 'eventmind-ai'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ai:8080']
