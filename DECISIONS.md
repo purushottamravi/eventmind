@@ -106,7 +106,7 @@ EventMind requires domain-oriented concepts such as:
 Axon provides these concepts directly.
 
 Kafka was later introduced for event distribution between services; Axon Framework
-remains the event-sourcing and command-handling backbone (see ADR-012).
+remains the event-sourcing and command-handling backbone (see ADR-001).
 
 ---
 

@@ -31,7 +31,7 @@ EventMind treats events as immutable facts and the event log as the system of re
 - Read models are **projections** of the event stream, not an alternative source of
   truth. `SymptomEventsHandler` (query) and `SymptomEventLogHandler` (observability)
   both derive their state purely from events.
-- The correlation ID (ADR-010) travels on every event, so each fact stays traceable
+- The correlation ID (ADR-001) travels on every event, so each fact stays traceable
   back to its originating request.
 
 The event flow:
