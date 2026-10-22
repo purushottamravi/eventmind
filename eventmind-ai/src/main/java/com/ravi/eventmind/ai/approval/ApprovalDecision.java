@@ -5,7 +5,6 @@ package com.ravi.eventmind.ai.approval;
  * Keeps us honest about who said yes, no, or held off.
  */
 public enum ApprovalDecision {
-
     APPROVED,
     REJECTED,
     RESERVED
